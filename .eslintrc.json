@@ -112,14 +112,6 @@
     "@typescript-eslint/quotes": "off",
     "@typescript-eslint/restrict-plus-operands": "error",
     "@typescript-eslint/semi": ["off", null],
-    "@typescript-eslint/strict-boolean-expressions": [
-      "error",
-      {
-        "allowNullableObject": true,
-        "allowNullableBoolean": false,
-        "allowNullableString": false
-      }
-    ],
     "@typescript-eslint/triple-slash-reference": [
       "error",
       {

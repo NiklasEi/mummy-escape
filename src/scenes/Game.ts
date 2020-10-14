@@ -1,13 +1,12 @@
 import * as Phaser from 'phaser';
-
 import { debugMask } from '../utils/debug';
 import { createGhostAnims } from '../anims/EnemyAnims';
 import { createMummyAnims } from '../anims/MummyAnims';
 import Ghost from '../enemies/Ghost';
 
 export default class Game extends Phaser.Scene {
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy!: Phaser.Physics.Arcade.Sprite;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private mummy?: Phaser.Physics.Arcade.Sprite;
 
   constructor() {
     super('game');
@@ -38,6 +37,8 @@ export default class Game extends Phaser.Scene {
     this.mummy.anims.play('mummy-idle-down');
 
     this.cameras.main.startFollow(this.mummy, true);
+
+    this.sound.play("background", {loop: true, volume: 0.5});
 
     const ghosts = this.physics.add.group({
       classType: Ghost,
