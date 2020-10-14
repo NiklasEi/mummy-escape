@@ -1,5 +1,8 @@
 import * as Phaser from 'phaser';
 import { debugMask } from '../utils/debug';
+import { createGhostAnims } from '../anims/EnemyAnims';
+import { createMummyAnims } from '../anims/MummyAnims';
+import Ghost from '../enemies/Ghost';
 
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -14,6 +17,9 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    createMummyAnims(this.anims);
+    createGhostAnims(this.anims);
+
     const map = this.make.tilemap({ key: 'pyramid' });
     const tileset = map.addTilesetImage('pyramid', 'tiles');
 
@@ -26,48 +32,26 @@ export default class Game extends Phaser.Scene {
     debugMask(wallsLayer, this);
 
     this.mummy = this.physics.add.sprite(450, 600, 'mummy', 'idle-down.png');
-    this.mummy.body.setSize(this.mummy.width * 0.6, this.mummy.height * 0.9);
-
-    this.anims.create({
-      key: 'mummy-idle-down',
-      frames: [{ key: 'mummy', frame: 'run-down-1.png' }]
-    });
-
-    this.anims.create({
-      key: 'mummy-run-down',
-      frames: this.anims.generateFrameNames('mummy', { start: 1, end: 3, prefix: 'run-down-', suffix: '.png' }),
-      repeat: -1,
-      frameRate: 10
-    });
-
-    this.anims.create({
-      key: 'mummy-run-up',
-      frames: this.anims.generateFrameNames('mummy', { start: 1, end: 3, prefix: 'run-up-', suffix: '.png' }),
-      repeat: -1,
-      frameRate: 10
-    });
-
-    this.anims.create({
-      key: 'mummy-run-left',
-      frames: this.anims.generateFrameNames('mummy', { start: 1, end: 3, prefix: 'run-left-', suffix: '.png' }),
-      repeat: -1,
-      frameRate: 10
-    });
-
-    this.anims.create({
-      key: 'mummy-run-right',
-      frames: this.anims.generateFrameNames('mummy', { start: 1, end: 3, prefix: 'run-right-', suffix: '.png' }),
-      repeat: -1,
-      frameRate: 10
-    });
+    this.mummy.body.setSize(this.mummy.width * 0.6, this.mummy.height * 0.8);
 
     this.mummy.anims.play('mummy-idle-down');
-
-    this.physics.add.collider(this.mummy, wallsLayer);
 
     this.cameras.main.startFollow(this.mummy, true);
 
     this.sound.play("background", {loop: true, volume: 0.5});
+
+    const ghosts = this.physics.add.group({
+      classType: Ghost,
+      createCallback: (gameObj) => {
+        const ghostObj = gameObj as Ghost;
+        ghostObj.body.onCollide = true;
+      }
+    });
+
+    ghosts.get(430, 700, 'ghost');
+
+    this.physics.add.collider(this.mummy, wallsLayer);
+    this.physics.add.collider(ghosts, wallsLayer);
   }
 
   update() {
