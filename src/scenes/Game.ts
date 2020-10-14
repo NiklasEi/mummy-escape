@@ -1,10 +1,9 @@
 import * as Phaser from 'phaser';
-
 import { debugMask } from '../utils/debug';
 
 export default class Game extends Phaser.Scene {
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy!: Phaser.Physics.Arcade.Sprite;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private mummy?: Phaser.Physics.Arcade.Sprite;
 
   constructor() {
     super('game');
