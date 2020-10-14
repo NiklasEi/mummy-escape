@@ -6,9 +6,10 @@ export default class Preloader extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('tiles', '../../assets/tileset.png');
-    this.load.tilemapTiledJSON('pyramid', '../../assets/pyramid.json');
-    this.load.atlas('mummy', '../../assets/mummy.png', '../../assets/mummy.json');
+    this.load.image('tiles', 'assets/tileset.png');
+    this.load.tilemapTiledJSON('pyramid', 'assets/pyramid.json');
+    this.load.atlas('mummy', 'assets/mummy.png', 'assets/mummy.json');
+    this.load.audio('background', 'assets/sounds/background.ogg');
   }
 
   create() {

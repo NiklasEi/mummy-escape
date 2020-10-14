@@ -66,6 +66,8 @@ export default class Game extends Phaser.Scene {
     this.physics.add.collider(this.mummy, wallsLayer);
 
     this.cameras.main.startFollow(this.mummy, true);
+
+    this.sound.play("background", {loop: true, volume: 0.5});
   }
 
   update() {
