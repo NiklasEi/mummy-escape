@@ -1,17 +1,17 @@
-import * as Phaser from "phaser";
+import * as Phaser from 'phaser';
 
-export default class Preloader extends Phaser.Scene
-{
-    constructor() {
-        super("preloader");
-    }
+export default class Preloader extends Phaser.Scene {
+  constructor() {
+    super('preloader');
+  }
 
-    preload() {
-        this.load.image("tiles", "../../assets/tileset.png");
-        this.load.tilemapTiledJSON("pyramid", "../../assets/pyramid.json")
-    }
+  preload() {
+    this.load.image('tiles', '../../assets/tileset.png');
+    this.load.tilemapTiledJSON('pyramid', '../../assets/pyramid.json');
+    this.load.atlas('mummy', '../../assets/mummy.png', '../../assets/mummy.json');
+  }
 
-    create() {
-        this.scene.start("game");
-    }
+  create() {
+    this.scene.start('game');
+  }
 }
