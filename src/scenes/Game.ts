@@ -38,7 +38,7 @@ export default class Game extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.mummy, true);
 
-    this.sound.play("background", {loop: true, volume: 0.5});
+    this.sound.play('background', { loop: true, volume: 0.5 });
 
     const ghosts = this.physics.add.group({
       classType: Ghost,

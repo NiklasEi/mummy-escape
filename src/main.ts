@@ -5,7 +5,7 @@ import Game from './scenes/Game';
 
 export default new Phaser.Game({
   title: 'Mummy escape',
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   physics: {
     default: 'arcade',
     arcade: {
