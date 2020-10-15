@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Phaser.GameObjects {
     interface GameObjectFactory {
       mummy(x: number, y: number, texture: string, frame?: string | number): Mummy;
@@ -68,8 +69,6 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys, vision: Phaser.GameObjects.Image) {
     if (this.healthState === HealthState.DAMAGE || this.healthState === HealthState.DEAD) return;
-
-    if (!cursors) return;
 
     const speed = 100;
     if (cursors.left?.isDown) {

@@ -12,9 +12,9 @@ export default class Game extends Phaser.Scene {
   private vision?: Phaser.GameObjects.Image;
 
   private handleAttackByGhost(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
-  if(!this.mummy) {
-  return;
-  }
+    if (!this.mummy) {
+      return;
+    }
     const ghost = obj2 as Ghost;
 
     const dx = this.mummy.x - ghost.x;
@@ -47,13 +47,13 @@ export default class Game extends Phaser.Scene {
     const map = this.make.tilemap({ key: 'pyramid' });
     const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
 
-    const groundLayer = map.createStaticLayer('Ground', tileset);
+    map.createStaticLayer('Ground', tileset);
     const wallsLayer = map.createStaticLayer('Walls', tileset);
 
     wallsLayer.setCollisionByProperty({ collides: true });
 
     // prepare player
-    this.mummy = this.add.mummy(430, 670, 'mummy');
+    this.mummy = this.add.mummy(430, 650, 'mummy');
     this.physics.add.collider(this.mummy, wallsLayer);
 
     this.cameras.main.startFollow(this.mummy, true);
@@ -66,7 +66,7 @@ export default class Game extends Phaser.Scene {
         ghostObj.body.onCollide = true;
       }
     });
-    const ghost = ghosts.get(430, 700, 'ghost');
+    ghosts.get(430, 700, 'ghost');
 
     this.physics.add.collider(ghosts, this.mummy, this.handleAttackByGhost, undefined, this);
     this.physics.add.collider(ghosts, wallsLayer);
@@ -74,37 +74,25 @@ export default class Game extends Phaser.Scene {
     // debug mode to show colliding areas
     // debugMask(wallsLayer, this);
 
-    this.renderVisibility([wallsLayer, groundLayer, ghost]);
+    this.renderVisibility();
   }
 
   update() {
-    if (this.mummy) {
+    if (this.mummy && this.vision && this.cursors) {
       this.mummy.update(this.cursors, this.vision);
-    }
-
-    if (this.vision && this.mummy) {
       this.vision.x = this.mummy.x;
       this.vision.y = this.mummy.y;
     }
   }
 
-  private renderVisibility(entries: any[]) {
+  private renderVisibility() {
     const rt = this.make.renderTexture({ height: 800, width: 800 }, true);
-
-    // fill it with black
     rt.fill(0x000000, 1);
-
-    rt.draw(entries);
-
-    rt.setTint(255);
-
     this.vision = this.make.image({
       key: 'vision',
       add: false
     });
-
     this.vision.scale = 3;
-
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
   }
 }
