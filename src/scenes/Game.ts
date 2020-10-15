@@ -1,12 +1,29 @@
 import * as Phaser from 'phaser';
+
 import { debugMask } from '../utils/debug';
 import { createGhostAnims } from '../anims/EnemyAnims';
 import { createMummyAnims } from '../anims/MummyAnims';
+import { sceneEvents } from "../events/EventCenter";
+
 import Ghost from '../enemies/Ghost';
+import Mummy from '../mummy/Mummy';
+import '../mummy/Mummy';
 
 export default class Game extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy?: Phaser.Physics.Arcade.Sprite;
+  private mummy?: Mummy;
+
+  private handleAttackByGhost(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    const ghost = obj2 as Ghost;
+
+    const dx = this.mummy.x - ghost.x;
+    const dy = this.mummy.y - ghost.y;
+
+    const newDirection = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+
+    this.mummy.handleDamage(newDirection);
+    sceneEvents.emit('health-damage', this.mummy.health)
+  }
 
   constructor() {
     super('game');
@@ -17,6 +34,8 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    this.scene.run('gameUI');
+
     createMummyAnims(this.anims);
     createGhostAnims(this.anims);
 
@@ -31,10 +50,7 @@ export default class Game extends Phaser.Scene {
     // debug mode to show colliding areas
     debugMask(wallsLayer, this);
 
-    this.mummy = this.physics.add.sprite(450, 600, 'mummy', 'idle-down.png');
-    this.mummy.body.setSize(this.mummy.width * 0.6, this.mummy.height * 0.8);
-
-    this.mummy.anims.play('mummy-idle-down');
+    this.mummy = this.add.mummy(450, 600, 'mummy');
 
     this.cameras.main.startFollow(this.mummy, true);
 
@@ -52,31 +68,12 @@ export default class Game extends Phaser.Scene {
 
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(ghosts, wallsLayer);
-
-    this.lights.enable().setAmbientColor(0x000000);
+    this.physics.add.collider(ghosts, this.mummy, this.handleAttackByGhost, undefined, this);
   }
 
-  update() {
-    if (!this.cursors || !this.mummy) return;
-
-    const speed = 100;
-    if (this.cursors.left?.isDown) {
-      this.mummy.anims.play('mummy-run-left', true);
-      this.mummy.setVelocity(-speed, 0);
-    } else if (this.cursors.right?.isDown) {
-      this.mummy.anims.play('mummy-run-right', true);
-      this.mummy.setVelocity(speed, 0);
-    } else if (this.cursors.up?.isDown) {
-      this.mummy.anims.play('mummy-run-up', true);
-      this.mummy.setVelocity(0, -speed);
-    } else if (this.cursors.down?.isDown) {
-      this.mummy.anims.play('mummy-run-down', true);
-      this.mummy.setVelocity(0, speed);
-    } else {
-      const parts = this.mummy.anims.currentAnim.key.split('-');
-      parts[1] = 'idle';
-      this.mummy.anims.play(parts.join('-'));
-      this.mummy.setVelocity(0, 0);
+  update(t: number, dt: number) {
+    if (this.mummy) {
+      this.mummy.update(this.cursors);
     }
   }
 }

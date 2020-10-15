@@ -12,6 +12,9 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio('background', 'assets/sounds/background.ogg');
     this.load.atlas('ghost', 'assets/ghost.png', 'assets/ghost.json');
     this.load.image('background', 'assets/background.jpg');
+    this.load.image('heart-empty', 'assets/health/heart_empty.png');
+    this.load.image('heart-full', 'assets/health/heart_full.png');
+    this.load.image('heart-half', 'assets/health/heart_half.png');
   }
 
   create() {
