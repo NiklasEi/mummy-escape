@@ -21,7 +21,7 @@ export default class Game extends Phaser.Scene {
     createGhostAnims(this.anims);
 
     const map = this.make.tilemap({ key: 'pyramid' });
-    const tileset = map.addTilesetImage('pyramid', 'tiles');
+    const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
 
     map.createStaticLayer('Ground', tileset);
     const wallsLayer = map.createStaticLayer('Walls', tileset);
@@ -52,6 +52,8 @@ export default class Game extends Phaser.Scene {
 
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(ghosts, wallsLayer);
+
+    this.lights.enable().setAmbientColor(0x000000);
   }
 
   update() {

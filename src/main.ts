@@ -16,8 +16,7 @@ export default new Phaser.Game({
   scene: [Preloader, Game],
   scale: {
     width: window.innerWidth,
-    height: window.innerHeight,
-    zoom: 2
+    height: window.innerHeight
   },
   parent: 'game',
   backgroundColor: '#000000'
