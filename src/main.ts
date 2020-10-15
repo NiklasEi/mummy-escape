@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 
 import Preloader from './scenes/Preloader';
 import Game from './scenes/Game';
+import GameUI from './scenes/GameUI';
 
 export default new Phaser.Game({
   title: 'Mummy escape',
@@ -13,11 +14,11 @@ export default new Phaser.Game({
       debug: false
     }
   },
-  scene: [Preloader, Game],
+  scene: [Preloader, Game, GameUI],
   scale: {
-    width: window.innerWidth,
-    height: window.innerHeight
+    width: 800,
+    height: 800
   },
-  parent: 'game',
-  backgroundColor: '#000000'
+  parent: 'content',
+  backgroundColor: '#000050'
 });
