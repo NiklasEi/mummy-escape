@@ -1,19 +1,19 @@
 import * as Phaser from 'phaser';
 
-import { sceneEvents } from "../events/EventCenter";
+import { sceneEvents } from '../events/EventCenter';
 
 export default class GameUI extends Phaser.Scene {
   private hearts!: Phaser.GameObjects.Group;
   private handleHealthDamage(health: number) {
     this.hearts.children.each((childObj, index) => {
-        const heart = childObj as Phaser.GameObjects.Image;
+      const heart = childObj as Phaser.GameObjects.Image;
 
-        if (index < health) {
-				heart.setTexture('heart-full')
-        } else {
-            heart.setTexture('heart-empty');
-        }
-    })
+      if (index < health) {
+        heart.setTexture('heart-full');
+      } else {
+        heart.setTexture('heart-empty');
+      }
+    });
   }
 
   constructor() {
@@ -38,8 +38,7 @@ export default class GameUI extends Phaser.Scene {
     sceneEvents.on('health-damage', this.handleHealthDamage, this);
 
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
-        sceneEvents.off('health-damage', this.handleHealthDamage, this);
-    })
+      sceneEvents.off('health-damage', this.handleHealthDamage, this);
+    });
   }
-
 }

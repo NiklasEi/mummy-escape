@@ -42,7 +42,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     --this._health;
 
     if (this._health <= 0) {
-        this.healthState = HealthState.DEAD;
+      this.healthState = HealthState.DEAD;
     }
   }
 
@@ -61,14 +61,12 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
           this.damageTime = 0;
         }
         break;
-       case HealthState.DEAD:
-
+      case HealthState.DEAD:
         break;
-
     }
   }
 
-  update(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
+  update(cursors: Phaser.Types.Input.Keyboard.CursorKeys, vision: Phaser.GameObjects.Image) {
     if (this.healthState === HealthState.DAMAGE || this.healthState === HealthState.DEAD) return;
 
     if (!cursors) return;
@@ -77,15 +75,19 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     if (cursors.left?.isDown) {
       this.anims.play('mummy-run-left', true);
       this.setVelocity(-speed, 0);
+      vision.setAngle(180);
     } else if (cursors.right?.isDown) {
       this.anims.play('mummy-run-right', true);
       this.setVelocity(speed, 0);
+      vision.setAngle(0);
     } else if (cursors.up?.isDown) {
       this.anims.play('mummy-run-up', true);
       this.setVelocity(0, -speed);
+      vision.setAngle(-90);
     } else if (cursors.down?.isDown) {
       this.anims.play('mummy-run-down', true);
       this.setVelocity(0, speed);
+      vision.setAngle(90);
     } else {
       const parts = this.anims.currentAnim.key.split('-');
       parts[1] = 'idle';

@@ -16,9 +16,9 @@ export default new Phaser.Game({
   },
   scene: [Preloader, Game, GameUI],
   scale: {
-    width: window.innerWidth,
-    height: window.innerHeight
+    width: 800,
+    height: 800
   },
-  parent: 'game',
-  backgroundColor: '#000000'
+  parent: 'content',
+  backgroundColor: '#000050'
 });
