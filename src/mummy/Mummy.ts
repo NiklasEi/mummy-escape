@@ -86,9 +86,6 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
       this.healthState = HealthState.DEAD;
       this.setTint(0xff0000);
 
-      // TODO: set die animation
-      this.anims.play('mummy-idle-down');
-      this.setVelocity(0, 0);
       sceneEvents.emit('mummy-die-start');
     }
   }
