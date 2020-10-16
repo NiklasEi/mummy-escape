@@ -19,6 +19,36 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health = 3;
+  private staffs?: Phaser.Physics.Arcade.Group;
+
+  private throwStaff() {
+    if (!this.staffs) return;
+    const direction = this.anims.currentAnim.key.split('-')[2];
+    const vec = new Phaser.Math.Vector2(0, 0);
+
+    switch (direction) {
+      case 'up':
+        vec.y = -1;
+        break;
+      case 'down':
+        vec.y = 1;
+        break;
+      case 'left':
+        vec.x = -1;
+        break;
+      case 'right':
+        vec.x = 1;
+        break;
+    }
+
+    const angle = vec.angle();
+    const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
+
+    staff.setActive(true);
+    staff.setVisible(true);
+    staff.setRotation(angle);
+    staff.setVelocity(vec.x * 300, vec.y * 300);
+  }
 
   get health() {
     return this._health;
@@ -29,21 +59,35 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('mummy-idle-down');
   }
 
+  giveStaffs(staffs: Phaser.Physics.Arcade.Group) {
+    this.staffs = staffs;
+  }
+
   handleDamage(direction: Phaser.Math.Vector2) {
-    if (this._health <= 0) return;
+    if (this._health <= 0) {
+      return;
+    }
 
-    if (this.healthState === HealthState.DAMAGE) return;
+    if (this.healthState === HealthState.DAMAGE) {
+      return;
+    }
 
-    this.setVelocity(direction.x, direction.y);
-
-    this.setTint(0xff0000);
-
-    this.healthState = HealthState.DAMAGE;
-    this.damageTime = 0;
     --this._health;
 
     if (this._health <= 0) {
       this.healthState = HealthState.DEAD;
+      this.setTint(0xff0000);
+
+      // TODO: set die animation
+      this.anims.play('mummy-idle-down');
+      this.setVelocity(0, 0);
+    } else {
+      this.setVelocity(direction.x, direction.y);
+
+      this.setTint(0xff0000);
+
+      this.healthState = HealthState.DAMAGE;
+      this.damageTime = 0;
     }
   }
 
@@ -69,6 +113,11 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys, vision: Phaser.GameObjects.Image) {
     if (this.healthState === HealthState.DAMAGE || this.healthState === HealthState.DEAD) return;
+    if (!cursors) return;
+    if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
+      this.throwStaff();
+      return;
+    }
 
     const speed = 100;
     if (cursors.left?.isDown) {

@@ -15,6 +15,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('heart-empty', 'assets/health/heart_empty.png');
     this.load.image('heart-full', 'assets/health/heart_full.png');
     this.load.image('heart-half', 'assets/health/heart_half.png');
+    this.load.image('staff', 'assets/weapons/staff.png');
   }
 
   create() {
