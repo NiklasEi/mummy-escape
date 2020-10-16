@@ -84,14 +84,13 @@ export default class GameScene extends Phaser.Scene {
     const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
 
     map.createStaticLayer('Ground', tileset);
-    const wallsLayer = map.createStaticLayer('Walls', tileset);
-
-    wallsLayer.setCollisionByProperty({ collides: true });
 
     // prepare player before wall so it walks through doors, not over them
     this.mummy = this.add.mummy(this.mummyStartingPosition.x, this.mummyStartingPosition.y, 'mummy');
-
     this.cameras.main.startFollow(this.mummy, true);
+
+    const wallsLayer = map.createStaticLayer('Walls', tileset);
+    wallsLayer.setCollisionByProperty({ collides: true });
 
     this.staffs = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image,
