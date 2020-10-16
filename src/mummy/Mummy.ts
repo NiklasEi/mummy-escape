@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { sceneEvents } from '../events/EventCenter';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -19,6 +20,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health = 3;
+  private dead = false;
 
   get health() {
     return this._health;
@@ -44,6 +46,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     if (this._health <= 0) {
       this.healthState = HealthState.DEAD;
+      sceneEvents.emit('mummy-die-start');
     }
   }
 
@@ -63,6 +66,18 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
         }
         break;
       case HealthState.DEAD:
+        if (this.dead) {
+          return;
+        }
+        this.damageTime += dt;
+
+        if (this.damageTime >= 250) {
+          this.dead = true;
+          this.anims.play('mummy-idle-down');
+          sceneEvents.emit('mummy-die-end');
+          this.setVelocity(0, 0);
+          this.damageTime = 0;
+        }
         break;
     }
   }
