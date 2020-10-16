@@ -5,6 +5,8 @@ import { sceneEvents } from '../events/EventCenter';
 
 import Ghost from '../enemies/Ghost';
 import '../mummy/Mummy';
+// eslint-disable-next-line no-duplicate-imports
+import Mummy from "../mummy/Mummy";
 
 interface Position {
   x: number;
@@ -22,7 +24,7 @@ export default class GameScene extends Phaser.Scene {
     y: 1300
   };
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy?: Phaser.Physics.Arcade.Sprite;
+  private mummy?: Mummy;
   private ghosts!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
@@ -52,11 +54,14 @@ export default class GameScene extends Phaser.Scene {
 
   private handleAttackGhost(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
     this.staffs.killAndHide(obj1);
+    obj1.destroy(true);
     this.ghosts.killAndHide(obj2);
+    obj2.destroy(true);
   }
 
   private handleStaffWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
     this.staffs.killAndHide(obj1);
+    obj1.destroy(true);
   }
 
   constructor() {
@@ -72,7 +77,7 @@ export default class GameScene extends Phaser.Scene {
 
     createMummyAnims(this.anims);
     createGhostAnims(this.anims);
-    //     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
+    this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
 
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });
@@ -93,7 +98,6 @@ export default class GameScene extends Phaser.Scene {
       maxSize: 3
     });
 
-    // @ts-ignore-next-line
     this.mummy.giveStaffs(this.staffs);
 
     // prepare other entities
