@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { sceneEvents } from '../events/EventCenter';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -19,6 +20,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health = 3;
+  private dead = false;
   private staffs?: Phaser.Physics.Arcade.Group;
 
   private throwStaff() {
@@ -49,7 +51,6 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     staff.setRotation(angle);
     staff.setVelocity(vec.x * 300, vec.y * 300);
   }
-
   get health() {
     return this._health;
   }
@@ -64,14 +65,16 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleDamage(direction: Phaser.Math.Vector2) {
-    if (this._health <= 0) {
-      return;
-    }
+//     if (this._health <= 0) return;
 
-    if (this.healthState === HealthState.DAMAGE) {
-      return;
-    }
+    if (this.healthState === HealthState.DAMAGE) return;
 
+    this.setVelocity(direction.x, direction.y);
+
+    this.setTint(0xff0000);
+
+    this.healthState = HealthState.DAMAGE;
+    this.damageTime = 0;
     --this._health;
 
     if (this._health <= 0) {
@@ -81,13 +84,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
       // TODO: set die animation
       this.anims.play('mummy-idle-down');
       this.setVelocity(0, 0);
-    } else {
-      this.setVelocity(direction.x, direction.y);
-
-      this.setTint(0xff0000);
-
-      this.healthState = HealthState.DAMAGE;
-      this.damageTime = 0;
+      sceneEvents.emit('mummy-die-start');
     }
   }
 
@@ -107,6 +104,18 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
         }
         break;
       case HealthState.DEAD:
+        if (this.dead) {
+          return;
+        }
+        this.damageTime += dt;
+
+        if (this.damageTime >= 250) {
+          this.dead = true;
+          this.anims.play('mummy-idle-down');
+          sceneEvents.emit('mummy-die-end');
+          this.setVelocity(0, 0);
+          this.damageTime = 0;
+        }
         break;
     }
   }

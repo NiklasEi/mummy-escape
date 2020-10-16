@@ -6,7 +6,21 @@ import { sceneEvents } from '../events/EventCenter';
 import Ghost from '../enemies/Ghost';
 import '../mummy/Mummy';
 
-export default class Game extends Phaser.Scene {
+interface Position {
+  x: number;
+  y: number;
+}
+
+export default class GameScene extends Phaser.Scene {
+ private readonly mapSize = 65;
+  private readonly mummyStartingPosition: Position = {
+    x: 1090,
+    y: 1280
+  };
+  private readonly ghostStartingPosition: Position = {
+    x: 1070,
+    y: 1300
+  };
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private mummy!: Phaser.Physics.Arcade.Sprite;
   private staffs!: Phaser.Physics.Arcade.Group;
@@ -61,21 +75,24 @@ export default class Game extends Phaser.Scene {
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });
     const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
+
     map.createStaticLayer('Ground', tileset);
     const wallsLayer = map.createStaticLayer('Walls', tileset);
+
+    wallsLayer.setCollisionByProperty({ collides: true });
+
+    // prepare player before wall so it walks through doors, not over them
+    this.mummy = this.add.mummy(this.mummyStartingPosition.x, this.mummyStartingPosition.y, 'mummy');
+
+    this.cameras.main.startFollow(this.mummy, true);
 
     this.staffs = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image
     });
 
-    wallsLayer.setCollisionByProperty({ collides: true });
-
-    // prepare player
-    this.mummy = this.add.mummy(430, 650, 'mummy');
     // @ts-ignore-next-line
     this.mummy.giveStaffs(this.staffs);
 
-    this.cameras.main.startFollow(this.mummy, true);
 
     // prepare other entities
     const ghosts = this.physics.add.group({
@@ -85,15 +102,15 @@ export default class Game extends Phaser.Scene {
         ghostObj.body.onCollide = true;
       }
     });
-    ghosts.get(430, 700, 'ghost');
+    ghosts.get(this.ghostStartingPosition.x, this.ghostStartingPosition.y, 'ghost');
 
     // add colliders
-    this.physics.add.collider(this.mummy, wallsLayer);
-    this.physics.add.collider(ghosts, wallsLayer);
-    this.playerGhostCollider = this.physics.add.collider(ghosts, this.mummy, this.handleAttackByGhost, undefined, this);
-    this.physics.add.collider(this.staffs, wallsLayer);
-    this.physics.add.collider(this.staffs, ghosts, this.handleAttackGhost, undefined, this);
-    this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
+        this.physics.add.collider(this.mummy, wallsLayer);
+        this.physics.add.collider(ghosts, wallsLayer);
+        this.playerGhostCollider = this.physics.add.collider(ghosts, this.mummy, this.handleAttackByGhost, undefined, this);
+        this.physics.add.collider(this.staffs, wallsLayer);
+        this.physics.add.collider(this.staffs, ghosts, this.handleAttackGhost, undefined, this);
+        this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
 
     // debug mode to show colliding areas
     // debugMask(wallsLayer, this);
@@ -110,7 +127,7 @@ export default class Game extends Phaser.Scene {
   }
 
   private renderVisibility() {
-    const rt = this.make.renderTexture({ height: 800, width: 800 }, true);
+    const rt = this.make.renderTexture({ height: 32 * this.mapSize, width: 32 * this.mapSize }, true);
     rt.fill(0x000000, 1);
     this.vision = this.make.image({
       key: 'vision',
@@ -118,5 +135,8 @@ export default class Game extends Phaser.Scene {
     });
     this.vision.scale = 3;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
+    sceneEvents.on('mummy-die-end', () => {
+      this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
+    });
   }
 }
