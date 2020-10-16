@@ -23,7 +23,10 @@ export default class GameScene extends Phaser.Scene {
   };
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private mummy?: Phaser.Physics.Arcade.Sprite;
+  private ghosts!: Phaser.Physics.Arcade.Group;
+  private staffs!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
+  private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
 
   private handleAttackByGhost(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
     if (!this.mummy) {
@@ -40,6 +43,20 @@ export default class GameScene extends Phaser.Scene {
     this.mummy.handleDamage(newDirection);
     // @ts-ignore-next-line
     sceneEvents.emit('health-damage', this.mummy.health);
+
+    // @ts-ignore-next-line
+    if (this.mummy.health <= 0) {
+      this.playerGhostCollider?.destroy();
+    }
+  }
+
+  private handleAttackGhost(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    this.staffs.killAndHide(obj1);
+    this.ghosts.killAndHide(obj2);
+  }
+
+  private handleStaffWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
+    this.staffs.killAndHide(obj1);
   }
 
   constructor() {
@@ -55,35 +72,54 @@ export default class GameScene extends Phaser.Scene {
 
     createMummyAnims(this.anims);
     createGhostAnims(this.anims);
-    this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
+    //     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
 
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });
     const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
 
     map.createStaticLayer('Ground', tileset);
+    const wallsLayer = map.createStaticLayer('Walls', tileset);
+
+    wallsLayer.setCollisionByProperty({ collides: true });
 
     // prepare player before wall so it walks through doors, not over them
     this.mummy = this.add.mummy(this.mummyStartingPosition.x, this.mummyStartingPosition.y, 'mummy');
 
-    const wallsLayer = map.createStaticLayer('Walls', tileset);
-    wallsLayer.setCollisionByProperty({ collides: true });
-    this.physics.add.collider(this.mummy, wallsLayer);
-
     this.cameras.main.startFollow(this.mummy, true);
 
+    this.staffs = this.physics.add.group({
+      classType: Phaser.Physics.Arcade.Image,
+      maxSize: 3
+    });
+
+    // @ts-ignore-next-line
+    this.mummy.giveStaffs(this.staffs);
+
     // prepare other entities
-    const ghosts = this.physics.add.group({
+    this.ghosts = this.physics.add.group({
       classType: Ghost,
       createCallback: (gameObj) => {
         const ghostObj = gameObj as Ghost;
         ghostObj.body.onCollide = true;
       }
     });
-    ghosts.get(this.ghostStartingPosition.x, this.ghostStartingPosition.y, 'ghost');
 
-    this.physics.add.collider(ghosts, this.mummy, this.handleAttackByGhost, undefined, this);
-    this.physics.add.collider(ghosts, wallsLayer);
+    this.ghosts.get(this.ghostStartingPosition.x, this.ghostStartingPosition.y, 'ghost');
+
+    // add colliders
+    this.physics.add.collider(this.mummy, wallsLayer);
+    this.physics.add.collider(this.ghosts, wallsLayer);
+    this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
+    this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
+
+    this.playerGhostCollider = this.physics.add.collider(
+      this.ghosts,
+      this.mummy,
+      this.handleAttackByGhost,
+      undefined,
+      this
+    );
 
     // debug mode to show colliding areas
     // debugMask(wallsLayer, this);

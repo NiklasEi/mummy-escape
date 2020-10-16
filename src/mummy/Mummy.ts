@@ -21,6 +21,40 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   private _health = 3;
   private dead = false;
+  private staffs?: Phaser.Physics.Arcade.Group;
+
+  private throwStaff() {
+    if (!this.staffs) return;
+    const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
+
+    const direction = this.anims.currentAnim.key.split('-')[2];
+    const vec = new Phaser.Math.Vector2(0, 0);
+
+    switch (direction) {
+      case 'up':
+        vec.y = -1;
+        break;
+      case 'down':
+        vec.y = 1;
+        break;
+      case 'left':
+        vec.x = -1;
+        break;
+      case 'right':
+        vec.x = 1;
+        break;
+    }
+
+    const angle = vec.angle();
+
+    staff.setActive(true);
+    staff.setVisible(true);
+    staff.setRotation(angle);
+
+    staff.x += vec.x * 16;
+    staff.y += vec.y * 16;
+    staff.setVelocity(vec.x * 300, vec.y * 300);
+  }
 
   get health() {
     return this._health;
@@ -31,8 +65,12 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('mummy-idle-down');
   }
 
+  giveStaffs(staffs: Phaser.Physics.Arcade.Group) {
+    this.staffs = staffs;
+  }
+
   handleDamage(direction: Phaser.Math.Vector2) {
-    if (this._health <= 0) return;
+    //     if (this._health <= 0) return;
 
     if (this.healthState === HealthState.DAMAGE) return;
 
@@ -46,6 +84,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     if (this._health <= 0) {
       this.healthState = HealthState.DEAD;
+      this.setTint(0xff0000);
+
       sceneEvents.emit('mummy-die-start');
     }
   }
@@ -84,6 +124,12 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys, vision: Phaser.GameObjects.Image) {
     if (this.healthState === HealthState.DAMAGE || this.healthState === HealthState.DEAD) return;
+
+    // @ts-ignore-next-line
+    if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
+      this.throwStaff();
+      return;
+    }
 
     const speed = 100;
     if (cursors.left?.isDown) {
