@@ -12,7 +12,7 @@ interface Position {
 }
 
 export default class GameScene extends Phaser.Scene {
- private readonly mapSize = 65;
+  private readonly mapSize = 65;
   private readonly mummyStartingPosition: Position = {
     x: 1090,
     y: 1280
@@ -21,8 +21,9 @@ export default class GameScene extends Phaser.Scene {
     x: 1070,
     y: 1300
   };
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy!: Phaser.Physics.Arcade.Sprite;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private mummy?: Phaser.Physics.Arcade.Sprite;
+  private ghosts!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
@@ -49,11 +50,12 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  private handleAttackGhost(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
-    console.log(obj2);
+  private handleAttackGhost(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    this.staffs.killAndHide(obj1);
+    this.ghosts.killAndHide(obj2);
   }
 
-  private handleStaffWallCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+  private handleStaffWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
     this.staffs.killAndHide(obj1);
   }
 
@@ -70,7 +72,7 @@ export default class GameScene extends Phaser.Scene {
 
     createMummyAnims(this.anims);
     createGhostAnims(this.anims);
-    this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
+    //     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
 
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });
@@ -87,30 +89,37 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.mummy, true);
 
     this.staffs = this.physics.add.group({
-      classType: Phaser.Physics.Arcade.Image
+      classType: Phaser.Physics.Arcade.Image,
+      maxSize: 3
     });
 
     // @ts-ignore-next-line
     this.mummy.giveStaffs(this.staffs);
 
-
     // prepare other entities
-    const ghosts = this.physics.add.group({
+    this.ghosts = this.physics.add.group({
       classType: Ghost,
       createCallback: (gameObj) => {
         const ghostObj = gameObj as Ghost;
         ghostObj.body.onCollide = true;
       }
     });
-    ghosts.get(this.ghostStartingPosition.x, this.ghostStartingPosition.y, 'ghost');
+
+    this.ghosts.get(this.ghostStartingPosition.x, this.ghostStartingPosition.y, 'ghost');
 
     // add colliders
-        this.physics.add.collider(this.mummy, wallsLayer);
-        this.physics.add.collider(ghosts, wallsLayer);
-        this.playerGhostCollider = this.physics.add.collider(ghosts, this.mummy, this.handleAttackByGhost, undefined, this);
-        this.physics.add.collider(this.staffs, wallsLayer);
-        this.physics.add.collider(this.staffs, ghosts, this.handleAttackGhost, undefined, this);
-        this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
+    this.physics.add.collider(this.mummy, wallsLayer);
+    this.physics.add.collider(this.ghosts, wallsLayer);
+    this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
+    this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
+
+    this.playerGhostCollider = this.physics.add.collider(
+      this.ghosts,
+      this.mummy,
+      this.handleAttackByGhost,
+      undefined,
+      this
+    );
 
     // debug mode to show colliding areas
     // debugMask(wallsLayer, this);

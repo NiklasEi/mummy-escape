@@ -25,6 +25,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   private throwStaff() {
     if (!this.staffs) return;
+    const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
+
     const direction = this.anims.currentAnim.key.split('-')[2];
     const vec = new Phaser.Math.Vector2(0, 0);
 
@@ -44,13 +46,16 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     }
 
     const angle = vec.angle();
-    const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
 
     staff.setActive(true);
     staff.setVisible(true);
     staff.setRotation(angle);
+
+    staff.x += vec.x * 16;
+    staff.y += vec.y * 16;
     staff.setVelocity(vec.x * 300, vec.y * 300);
   }
+
   get health() {
     return this._health;
   }
@@ -65,7 +70,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleDamage(direction: Phaser.Math.Vector2) {
-//     if (this._health <= 0) return;
+    //     if (this._health <= 0) return;
 
     if (this.healthState === HealthState.DAMAGE) return;
 
@@ -122,7 +127,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys, vision: Phaser.GameObjects.Image) {
     if (this.healthState === HealthState.DAMAGE || this.healthState === HealthState.DEAD) return;
-    if (!cursors) return;
+
+    // @ts-ignore-next-line
     if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
       this.throwStaff();
       return;
