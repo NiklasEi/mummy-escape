@@ -1,0 +1,115 @@
+{
+  "frames": [
+    {
+      "filename": "Ghost1.png",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 37,
+        "h": 45
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 37,
+        "h": 45
+      },
+      "sourceSize": {
+        "w": 37,
+        "h": 45
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "Ghost2.png",
+      "frame": {
+        "x": 0,
+        "y": 45,
+        "w": 37,
+        "h": 45
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 37,
+        "h": 45
+      },
+      "sourceSize": {
+        "w": 37,
+        "h": 45
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "Ghost3.png",
+      "frame": {
+        "x": 0,
+        "y": 90,
+        "w": 37,
+        "h": 45
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 37,
+        "h": 45
+      },
+      "sourceSize": {
+        "w": 37,
+        "h": 45
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "Ghost4.png",
+      "frame": {
+        "x": 0,
+        "y": 135,
+        "w": 37,
+        "h": 45
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 37,
+        "h": 45
+      },
+      "sourceSize": {
+        "w": 37,
+        "h": 45
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  ],
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.6",
+    "image": "texture.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 37,
+      "h": 180
+    },
+    "scale": 1
+  }
+}

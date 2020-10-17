@@ -16,8 +16,8 @@ interface Position {
 export default class GameScene extends Phaser.Scene {
   private readonly mapSize = 65;
   private readonly mummyStartingPosition: Position = {
-    x: 1090,
-    y: 1280
+    x: 1583,
+    y: 1583
   };
   private readonly ghostStartingPosition: Position = {
     x: 1070,
