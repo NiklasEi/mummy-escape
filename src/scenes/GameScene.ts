@@ -140,13 +140,29 @@ export default class GameScene extends Phaser.Scene {
 
   private renderVisibility() {
     const rt = this.make.renderTexture({ height: 32 * this.mapSize, width: 32 * this.mapSize }, true);
-    rt.fill(0x000000, 1);
     this.vision = this.make.image({
       key: 'vision',
       add: false
     });
-    this.vision.scale = 3;
+    const image = this.make.image({
+      key: 'vision',
+      add: false,
+      x: this.mummyStartingPosition.x,
+      y: this.mummyStartingPosition.y
+    });
+    const image2 = this.make.image({
+      key: 'vision',
+      add: false,
+      x: this.mummyStartingPosition.x + 60,
+      y: this.mummyStartingPosition.y
+    });
+    image.scale = 5;
+    rt.draw(image);
+    rt.draw(image2);
+
+    this.vision.scale = 9;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
+    rt.mask.invertAlpha = true;
     sceneEvents.on('mummy-die-end', () => {
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
     });
