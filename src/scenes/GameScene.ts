@@ -14,10 +14,10 @@ interface Position {
 }
 
 export default class GameScene extends Phaser.Scene {
-  private readonly mapSize = 65;
+  private readonly mapSize = 100;
   private readonly mummyStartingPosition: Position = {
-    x: 1583,
-    y: 1583
+    x: 50 * 32,
+    y: 50 * 32
   };
   private readonly ghostStartingPosition: Position = {
     x: 1070,
@@ -150,15 +150,7 @@ export default class GameScene extends Phaser.Scene {
       x: this.mummyStartingPosition.x,
       y: this.mummyStartingPosition.y
     });
-    const image2 = this.make.image({
-      key: 'vision',
-      add: false,
-      x: this.mummyStartingPosition.x + 60,
-      y: this.mummyStartingPosition.y
-    });
-    image.scale = 5;
     rt.draw(image);
-    rt.draw(image2);
 
     this.vision.scale = 9;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
