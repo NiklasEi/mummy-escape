@@ -26,6 +26,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private throwStaff() {
     if (!this.staffs) return;
     const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!staff) return;
 
     const direction = this.anims.currentAnim.key.split('-')[2];
     const vec = new Phaser.Math.Vector2(0, 0);
