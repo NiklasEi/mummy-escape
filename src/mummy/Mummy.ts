@@ -20,10 +20,12 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health = 3;
+  private _stones = 0;
   private dead = false;
   private staffs?: Phaser.Physics.Arcade.Group;
 
   private throwStaff() {
+    if (!this._stones) return;
     if (!this.staffs) return;
     const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -69,6 +71,10 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   giveStaffs(staffs: Phaser.Physics.Arcade.Group) {
     this.staffs = staffs;
+  }
+
+  collectStones() {
+    this._stones++;
   }
 
   handleDamage(direction: Phaser.Math.Vector2) {

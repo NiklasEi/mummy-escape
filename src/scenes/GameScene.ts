@@ -14,6 +14,11 @@ export interface Position {
   y: number;
 }
 
+const stonePositions: Position[] = [
+  { x: 49 * 32, y: 50 * 32 },
+  { x: 55 * 32, y: 36 * 32 }
+];
+
 export default class GameScene extends Phaser.Scene {
   private readonly mapSize = 100;
   private readonly mummyStartingPosition: Position = {
@@ -21,10 +26,11 @@ export default class GameScene extends Phaser.Scene {
     y: 50 * 32
   };
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy?: Mummy;
+  private mummy!: Mummy;
   private ghosts!: Phaser.Physics.Arcade.Group;
   private bats!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
+  private stones!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
   private playerBatCollider?: Phaser.Physics.Arcade.Collider;
@@ -58,6 +64,11 @@ export default class GameScene extends Phaser.Scene {
     obj1.destroy(true);
   }
 
+  private handleCollectStones(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    obj2.destroy(true);
+    this.mummy.collectStones();
+  }
+
   constructor() {
     super('game');
   }
@@ -89,14 +100,21 @@ export default class GameScene extends Phaser.Scene {
     wallsLayer.setCollisionByProperty({ collides: true });
 
     const doorLayer = map.createStaticLayer('Doors', tileset);
-
+    doorLayer.setCollisionByProperty({ collides: true });
 
     this.staffs = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image,
       maxSize: 1
     });
-
     this.mummy.giveStaffs(this.staffs);
+
+    this.stones = this.physics.add.group({
+      classType: Phaser.Physics.Arcade.Image
+    });
+    stonePositions.forEach((position) => {
+      const stone = this.stones.get(position.x, position.y, 'stone');
+      stone.scale = 0.5;
+    });
 
     // prepare other entities
     this.ghosts = this.physics.add.group({
@@ -122,10 +140,12 @@ export default class GameScene extends Phaser.Scene {
     // add colliders
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(this.ghosts, wallsLayer);
+    this.physics.add.collider(this.ghosts, doorLayer);
+
     this.physics.add.collider(this.bats, wallsLayer);
+    this.physics.add.collider(this.bats, doorLayer);
     this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
     this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
-    this.physics.add.collider(this.bats, doorLayer);
 
     // attack by enemies
     this.playerGhostCollider = this.physics.add.collider(
@@ -142,6 +162,8 @@ export default class GameScene extends Phaser.Scene {
       undefined,
       this
     );
+
+    this.physics.add.collider(this.stones, this.mummy, this.handleCollectStones, undefined, this);
 
     sceneEvents.on('mummy-die-start', () => {
       this.playerGhostCollider?.destroy();
