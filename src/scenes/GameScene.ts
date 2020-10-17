@@ -6,7 +6,7 @@ import { sceneEvents } from '../events/EventCenter';
 import Ghost from '../enemies/Ghost';
 import '../mummy/Mummy';
 // eslint-disable-next-line no-duplicate-imports
-import Mummy from "../mummy/Mummy";
+import Mummy from '../mummy/Mummy';
 
 interface Position {
   x: number;
