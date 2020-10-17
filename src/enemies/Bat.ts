@@ -19,8 +19,8 @@ const randomDirection = (exclude: Direction) => {
 };
 
 export const batPositions: Position[] = [
-  { x: 47, y: 47 },
-  { x: 52, y: 47 }
+  { x: 49 * 32, y: 47 * 32 },
+  { x: 52 * 32, y: 47 * 32 }
 ];
 
 export default class Bat extends Phaser.Physics.Arcade.Sprite {
