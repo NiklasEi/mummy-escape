@@ -3,8 +3,8 @@ import { Position } from '../scenes/GameScene';
 import {Direction, randomDirection} from "../utils/direction";
 
 export const ghostPositions: Position[] = [
-  { x: 57, y: 25 },
-  { x: 55, y: 36 }
+  { x: 57 * 32, y: 25 * 32 },
+  { x: 55 * 32, y: 36 * 32 }
 ];
 
 export default class Ghost extends Phaser.Physics.Arcade.Sprite {

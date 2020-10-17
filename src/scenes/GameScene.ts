@@ -17,6 +17,11 @@ export interface Position {
   y: number;
 }
 
+const stonePositions: Position[] = [
+  { x: 49 * 32, y: 50 * 32 },
+  { x: 55 * 32, y: 36 * 32 }
+];
+
 export default class GameScene extends Phaser.Scene {
   private readonly mapSize = 100;
   private readonly mummyStartingPosition: Position = {
@@ -29,6 +34,7 @@ export default class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private spikes!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
+  private stones!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
   private playerBatCollider?: Phaser.Physics.Arcade.Collider;
@@ -39,7 +45,7 @@ export default class GameScene extends Phaser.Scene {
     const dx = this.mummy.x - enemy.x;
     const dy = this.mummy.y - enemy.y;
 
-    const newDirection = new Phaser.Math.Vector2(dx, dy).normalize().scale(100);
+    const newDirection = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
 
     // @ts-ignore-next-line
     this.mummy.handleDamage(newDirection);
@@ -57,6 +63,11 @@ export default class GameScene extends Phaser.Scene {
   private handleStaffWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
     this.staffs.killAndHide(obj1);
     obj1.destroy(true);
+  }
+
+  private handleCollectStones(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    obj2.destroy(true);
+    this.mummy.collectStones();
   }
 
   constructor() {
@@ -101,12 +112,22 @@ export default class GameScene extends Phaser.Scene {
     const wallsLayer = map.createStaticLayer('Walls', tileset);
     wallsLayer.setCollisionByProperty({ collides: true });
 
+    const doorLayer = map.createStaticLayer('Doors', tileset);
+    doorLayer.setCollisionByProperty({ collides: true });
+
     this.staffs = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image,
       maxSize: 1
     });
-
     this.mummy.giveStaffs(this.staffs);
+
+    this.stones = this.physics.add.group({
+      classType: Phaser.Physics.Arcade.Image
+    });
+    stonePositions.forEach((position) => {
+      const stone = this.stones.get(position.x, position.y, 'stone');
+      stone.scale = 0.5;
+    });
 
     // prepare other entities
     this.ghosts = this.physics.add.group({
@@ -116,7 +137,7 @@ export default class GameScene extends Phaser.Scene {
         ghostObj.body.onCollide = true;
       }
     });
-    ghostPositions.forEach((position) => this.ghosts.get(position.x * 32, position.y * 32, 'ghost'));
+    ghostPositions.forEach((position) => this.ghosts.get(position.x, position.y, 'ghost'));
 
     this.bats = this.physics.add.group({
       classType: Bat,
@@ -127,14 +148,17 @@ export default class GameScene extends Phaser.Scene {
         batObj.body.setSize(batObj.width * 0.7, batObj.height * 0.5);
       }
     });
-    batPositions.forEach((position) => this.bats.get(position.x * 32, position.y * 32, 'bat'));
+    batPositions.forEach((position) => this.bats.get(position.x, position.y, 'bat'));
 
     spikePositions.map(slotToCenterInTile).forEach((position) => this.spikes.get(position.x, position.y, 'spikes'));
 
     // add colliders
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(this.ghosts, wallsLayer);
+    this.physics.add.collider(this.ghosts, doorLayer);
+
     this.physics.add.collider(this.bats, wallsLayer);
+    this.physics.add.collider(this.bats, doorLayer);
     this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
     this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
 
@@ -153,6 +177,8 @@ export default class GameScene extends Phaser.Scene {
       undefined,
       this
     );
+
+    this.physics.add.collider(this.stones, this.mummy, this.handleCollectStones, undefined, this);
 
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {

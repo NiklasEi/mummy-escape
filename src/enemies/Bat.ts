@@ -3,8 +3,8 @@ import { Position } from '../scenes/GameScene';
 import {Direction, randomDirection} from "../utils/direction";
 
 export const batPositions: Position[] = [
-  { x: 47, y: 47 },
-  { x: 52, y: 47 }
+  { x: 49 * 32, y: 47 * 32 },
+  { x: 52 * 32, y: 47 * 32 }
 ];
 
 export default class Bat extends Phaser.Physics.Arcade.Sprite {
@@ -22,7 +22,7 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
     // bat.transform.scaleY = 0.5
 
     this.moveEvent = scene.time.addEvent({
-      delay: 1000,
+      delay: 2000,
       callback: () => (this.direction = randomDirection(this.direction)),
       loop: true
     });
