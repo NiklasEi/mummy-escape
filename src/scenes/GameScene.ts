@@ -26,7 +26,8 @@ export default class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
-  private playerEnemyCollider?: Phaser.Physics.Arcade.Collider;
+  private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
+  private playerBatCollider?: Phaser.Physics.Arcade.Collider;
 
   private handleAttackByEnemy(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
     if (!this.mummy) {
@@ -43,11 +44,6 @@ export default class GameScene extends Phaser.Scene {
     this.mummy.handleDamage(newDirection);
     // @ts-ignore-next-line
     sceneEvents.emit('health-damage', this.mummy.health);
-
-    // @ts-ignore-next-line
-    if (this.mummy.health <= 0) {
-      this.playerEnemyCollider?.destroy();
-    }
   }
 
   private handleAttackGhost(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
@@ -94,7 +90,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.staffs = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image,
-      maxSize: 3
+      maxSize: 1
     });
 
     this.mummy.giveStaffs(this.staffs);
@@ -128,20 +124,25 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
 
     // attack by enemies
-    this.playerEnemyCollider = this.physics.add.collider(
+    this.playerGhostCollider = this.physics.add.collider(
       this.ghosts,
       this.mummy,
       this.handleAttackByEnemy,
       undefined,
       this
     );
-    this.playerEnemyCollider = this.physics.add.collider(
+    this.playerBatCollider = this.physics.add.collider(
       this.bats,
       this.mummy,
       this.handleAttackByEnemy,
       undefined,
       this
     );
+
+    sceneEvents.on('mummy-die-start', () => {
+      this.playerGhostCollider?.destroy();
+      this.playerBatCollider?.destroy();
+    });
 
     // debug mode to show colliding areas
     // debugMask(wallsLayer, this);
