@@ -1,22 +1,6 @@
 import * as Phaser from 'phaser';
 import { Position } from '../scenes/GameScene';
-
-enum Direction {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
-}
-
-const randomDirection = (exclude: Direction) => {
-  let newDirection = Phaser.Math.Between(0, 3);
-
-  while (newDirection === exclude) {
-    newDirection = Phaser.Math.Between(0, 3);
-  }
-
-  return newDirection;
-};
+import {Direction, randomDirection} from "../utils/direction";
 
 export const ghostPositions: Position[] = [
   { x: 57, y: 25 },
@@ -30,6 +14,7 @@ export default class Ghost extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
     super(scene, x, y, texture, frame);
     this.anims.play('ghost-idle');
+    this.direction = randomDirection();
 
     scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileCollision, this);
 

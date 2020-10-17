@@ -1,22 +1,6 @@
 import * as Phaser from 'phaser';
 import { Position } from '../scenes/GameScene';
-
-enum Direction {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
-}
-
-const randomDirection = (exclude: Direction) => {
-  let newDirection = Phaser.Math.Between(0, 3);
-
-  while (newDirection === exclude) {
-    newDirection = Phaser.Math.Between(0, 3);
-  }
-
-  return newDirection;
-};
+import {Direction, randomDirection} from "../utils/direction";
 
 export const batPositions: Position[] = [
   { x: 47, y: 47 },
@@ -31,7 +15,7 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture, frame);
     this.anims.play('bat-fly');
     scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileCollision, this);
-
+    this.direction = randomDirection();
     //
     //   bat.body.setSize(bat.width * 0.6);
     //

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
-import { createGhostAnims, createBatAnims } from '../anims/EnemyAnims';
-import { createMummyAnims } from '../anims/MummyAnims';
+import { createGhostAnims, createBatAnims } from '../anims/enemyAnims';
+import { createMummyAnims } from '../anims/mummyAnims';
 import { sceneEvents } from '../events/EventCenter';
 
 import Ghost, { ghostPositions } from '../enemies/Ghost';
@@ -8,6 +8,9 @@ import Bat, { batPositions } from '../enemies/Bat';
 import '../mummy/Mummy';
 // eslint-disable-next-line no-duplicate-imports
 import Mummy from '../mummy/Mummy';
+import {createSpikeAnimations} from "../anims/trapAnimations";
+import {spikePositions, Spikes} from "../traps/Spikes";
+import {slotToCenterInTile} from "../utils/tilePositioning";
 
 export interface Position {
   x: number;
@@ -21,18 +24,16 @@ export default class GameScene extends Phaser.Scene {
     y: 50 * 32
   };
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy?: Mummy;
+  private mummy!: Mummy;
   private ghosts!: Phaser.Physics.Arcade.Group;
   private bats!: Phaser.Physics.Arcade.Group;
+  private spikes!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
   private playerBatCollider?: Phaser.Physics.Arcade.Collider;
 
   private handleAttackByEnemy(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
-    if (!this.mummy) {
-      return;
-    }
     const enemy = obj2 as Ghost | Bat;
 
     const dx = this.mummy.x - enemy.x;
@@ -72,6 +73,7 @@ export default class GameScene extends Phaser.Scene {
     createMummyAnims(this.anims);
     createGhostAnims(this.anims);
     createBatAnims(this.anims);
+    createSpikeAnimations(this.anims);
 
     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
 
@@ -80,6 +82,17 @@ export default class GameScene extends Phaser.Scene {
     const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
 
     map.createStaticLayer('Ground', tileset);
+
+    this.spikes = this.physics.add.group({
+      classType: Spikes,
+      createCallback: (gameObj) => {
+        const spike = gameObj as Spikes;
+        spike.body.onCollide = true;
+        spike.addCollider(this.physics.add.collider(this.bats, spike, spike.trigger, undefined, spike));
+        spike.addCollider(this.physics.add.collider(this.ghosts, spike, spike.trigger, undefined, spike));
+        spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike));
+      }
+    });
 
     // prepare player before wall so it walks through doors, not over them
     this.mummy = this.add.mummy(this.mummyStartingPosition.x, this.mummyStartingPosition.y, 'mummy');
@@ -116,6 +129,8 @@ export default class GameScene extends Phaser.Scene {
     });
     batPositions.forEach((position) => this.bats.get(position.x * 32, position.y * 32, 'bat'));
 
+    spikePositions.map(slotToCenterInTile).forEach((position) => this.spikes.get(position.x, position.y, 'spikes'));
+
     // add colliders
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(this.ghosts, wallsLayer);
@@ -140,8 +155,12 @@ export default class GameScene extends Phaser.Scene {
     );
 
     sceneEvents.on('mummy-die-start', () => {
-      this.playerGhostCollider?.destroy();
-      this.playerBatCollider?.destroy();
+      if (this.playerGhostCollider?.active) {
+        this.playerGhostCollider.destroy();
+      }
+      if (this.playerBatCollider?.active) {
+        this.playerBatCollider.destroy();
+      }
     });
 
     // debug mode to show colliding areas
@@ -151,7 +170,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.mummy && this.vision && this.cursors) {
+    if (this.vision && this.cursors) {
       this.mummy.update(this.cursors, this.vision);
       this.vision.x = this.mummy.x;
       this.vision.y = this.mummy.y;
