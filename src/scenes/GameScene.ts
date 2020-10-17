@@ -1,14 +1,15 @@
 import * as Phaser from 'phaser';
-import { createGhostAnims } from '../anims/EnemyAnims';
+import { createGhostAnims, createBatAnims } from '../anims/EnemyAnims';
 import { createMummyAnims } from '../anims/MummyAnims';
 import { sceneEvents } from '../events/EventCenter';
 
-import Ghost from '../enemies/Ghost';
+import Ghost, { ghostPositions } from '../enemies/Ghost';
+import Bat, { batPositions } from '../enemies/Bat';
 import '../mummy/Mummy';
 // eslint-disable-next-line no-duplicate-imports
-import Mummy from "../mummy/Mummy";
+import Mummy from '../mummy/Mummy';
 
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }
@@ -19,27 +20,24 @@ export default class GameScene extends Phaser.Scene {
     x: 50 * 32,
     y: 50 * 32
   };
-  private readonly ghostStartingPosition: Position = {
-    x: 1070,
-    y: 1300
-  };
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private mummy?: Mummy;
   private ghosts!: Phaser.Physics.Arcade.Group;
+  private bats!: Phaser.Physics.Arcade.Group;
   private staffs!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
-  private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
+  private playerEnemyCollider?: Phaser.Physics.Arcade.Collider;
 
-  private handleAttackByGhost(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+  private handleAttackByEnemy(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
     if (!this.mummy) {
       return;
     }
-    const ghost = obj2 as Ghost;
+    const enemy = obj2 as Ghost | Bat;
 
-    const dx = this.mummy.x - ghost.x;
-    const dy = this.mummy.y - ghost.y;
+    const dx = this.mummy.x - enemy.x;
+    const dy = this.mummy.y - enemy.y;
 
-    const newDirection = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+    const newDirection = new Phaser.Math.Vector2(dx, dy).normalize().scale(100);
 
     // @ts-ignore-next-line
     this.mummy.handleDamage(newDirection);
@@ -48,7 +46,7 @@ export default class GameScene extends Phaser.Scene {
 
     // @ts-ignore-next-line
     if (this.mummy.health <= 0) {
-      this.playerGhostCollider?.destroy();
+      this.playerEnemyCollider?.destroy();
     }
   }
 
@@ -77,6 +75,8 @@ export default class GameScene extends Phaser.Scene {
 
     createMummyAnims(this.anims);
     createGhostAnims(this.anims);
+    createBatAnims(this.anims);
+
     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
 
     // prepare map
@@ -107,19 +107,38 @@ export default class GameScene extends Phaser.Scene {
         ghostObj.body.onCollide = true;
       }
     });
+    ghostPositions.forEach((position) => this.ghosts.get(position.x * 32, position.y * 32, 'ghost'));
 
-    this.ghosts.get(this.ghostStartingPosition.x, this.ghostStartingPosition.y, 'ghost');
+    this.bats = this.physics.add.group({
+      classType: Bat,
+      createCallback: (gameObj) => {
+        const batObj = gameObj as Bat;
+        batObj.body.onCollide = true;
+        this.physics.world.enableBody(batObj, Phaser.Physics.Arcade.DYNAMIC_BODY);
+        batObj.body.setSize(batObj.width * 0.7, batObj.height * 0.5);
+      }
+    });
+    batPositions.forEach((position) => this.bats.get(position.x * 32, position.y * 32, 'bat'));
 
     // add colliders
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(this.ghosts, wallsLayer);
+    this.physics.add.collider(this.bats, wallsLayer);
     this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
     this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
 
-    this.playerGhostCollider = this.physics.add.collider(
+    // attack by enemies
+    this.playerEnemyCollider = this.physics.add.collider(
       this.ghosts,
       this.mummy,
-      this.handleAttackByGhost,
+      this.handleAttackByEnemy,
+      undefined,
+      this
+    );
+    this.playerEnemyCollider = this.physics.add.collider(
+      this.bats,
+      this.mummy,
+      this.handleAttackByEnemy,
       undefined,
       this
     );
@@ -148,9 +167,7 @@ export default class GameScene extends Phaser.Scene {
       key: 'mask',
       add: false
     });
-    rt.draw(mask,
-        this.mapSize * 16,
-        this.mapSize * 16);
+    rt.draw(mask, this.mapSize * 16, this.mapSize * 16);
 
     this.vision.scale = 9;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);

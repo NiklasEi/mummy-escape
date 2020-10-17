@@ -19,7 +19,8 @@ export default class Preloader extends Phaser.Scene {
 
     // entities
     this.load.atlas('mummy', 'assets/mummy.png', 'assets/mummy.json');
-    this.load.atlas('ghost', 'assets/enemies/ghost.png', 'assets/ghost.json');
+    this.load.atlas('ghost', 'assets/enemies/ghost1/ghost.png', 'assets/enemies/ghost1/ghost.json');
+    this.load.atlas('bat', 'assets/enemies/bat/bat.png', 'assets/enemies/bat/bat.json');
     this.load.image('staff', 'assets/weapons/staff.png');
 
     // UI

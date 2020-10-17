@@ -16,4 +16,18 @@ const createGhostAnims = (anims: Phaser.Animations.AnimationManager) => {
   });
 };
 
-export { createGhostAnims };
+const createBatAnims = (anims: Phaser.Animations.AnimationManager) => {
+  anims.create({
+    key: 'bat-fly',
+    frames: anims.generateFrameNames('bat', { start: 1, end: 4, prefix: 'Bat', suffix: '.png' }),
+    repeat: -1,
+    frameRate: 10
+  });
+
+  anims.create({
+    key: 'bat-idle',
+    frames: [{ key: 'bat', frame: 'Bat1.png' }]
+  });
+};
+
+export { createGhostAnims, createBatAnims };

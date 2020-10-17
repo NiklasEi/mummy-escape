@@ -18,23 +18,27 @@ const randomDirection = (exclude: Direction) => {
   return newDirection;
 };
 
-export const ghostPositions: Position[] = [
-  { x: 57, y: 25 },
-  { x: 55, y: 36 }
+export const batPositions: Position[] = [
+  { x: 47, y: 47 },
+  { x: 52, y: 47 }
 ];
 
-export default class Ghost extends Phaser.Physics.Arcade.Sprite {
+export default class Bat extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
   private readonly moveEvent: Phaser.Time.TimerEvent;
 
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
     super(scene, x, y, texture, frame);
-    this.anims.play('ghost-idle');
-
+    this.anims.play('bat-fly');
     scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileCollision, this);
 
+    //
+    //   bat.body.setSize(bat.width * 0.6);
+    //
+    // bat.transform.scaleY = 0.5
+
     this.moveEvent = scene.time.addEvent({
-      delay: 2000,
+      delay: 1000,
       callback: () => (this.direction = randomDirection(this.direction)),
       loop: true
     });
