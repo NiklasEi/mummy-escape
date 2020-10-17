@@ -1,11 +1,5 @@
 import * as Phaser from 'phaser';
-import { Position } from '../scenes/GameScene';
-import {Direction, randomDirection} from "../utils/direction";
-
-export const batPositions: Position[] = [
-  { x: 49 * 32, y: 47 * 32 },
-  { x: 52 * 32, y: 47 * 32 }
-];
+import { Direction, randomDirection } from '../utils/direction';
 
 export default class Bat extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;
@@ -16,10 +10,6 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('bat-fly');
     scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileCollision, this);
     this.direction = randomDirection();
-    //
-    //   bat.body.setSize(bat.width * 0.6);
-    //
-    // bat.transform.scaleY = 0.5
 
     this.moveEvent = scene.time.addEvent({
       delay: 2000,

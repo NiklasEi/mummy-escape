@@ -139,7 +139,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    const speed = 100;
+    const speed = 125;
     if (cursors.left?.isDown) {
       this.anims.play('mummy-run-left', true);
       this.setVelocity(-speed, 0);

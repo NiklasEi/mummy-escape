@@ -1,11 +1,5 @@
 import * as Phaser from 'phaser';
-import { Position } from '../scenes/GameScene';
-import {Direction, randomDirection} from "../utils/direction";
-
-export const ghostPositions: Position[] = [
-  { x: 57 * 32, y: 25 * 32 },
-  { x: 55 * 32, y: 36 * 32 }
-];
+import { Direction, randomDirection } from '../utils/direction';
 
 export default class Ghost extends Phaser.Physics.Arcade.Sprite {
   private direction = Direction.RIGHT;

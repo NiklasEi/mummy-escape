@@ -1,38 +1,26 @@
 import * as Phaser from 'phaser';
-import { createGhostAnims, createBatAnims } from '../anims/enemyAnims';
+import { createBatAnims, createGhostAnims } from '../anims/enemyAnims';
 import { createMummyAnims } from '../anims/mummyAnims';
 import { sceneEvents } from '../events/EventCenter';
 
-import Ghost, { ghostPositions } from '../enemies/Ghost';
-import Bat, { batPositions } from '../enemies/Bat';
+import Ghost from '../enemies/Ghost';
+import Bat from '../enemies/Bat';
 import '../mummy/Mummy';
 // eslint-disable-next-line no-duplicate-imports
 import Mummy from '../mummy/Mummy';
-import {createSpikeAnimations} from "../anims/trapAnimations";
-import {spikePositions, Spikes} from "../traps/Spikes";
-import {slotToCenterInTile} from "../utils/tilePositioning";
-
-export interface Position {
-  x: number;
-  y: number;
-}
-
-const stonePositions: Position[] = [
-  { x: 49 * 32, y: 50 * 32 },
-  { x: 55 * 32, y: 36 * 32 }
-];
+import { createSpikeAnimations } from '../anims/trapAnimations';
+import { Spikes } from '../traps/Spikes';
+import { slotToCenterInTile, slotToPixels } from '../utils/tilePositioning';
+import { mapSize, tileSize } from '../utils/constants';
+import { batPositions, ghostPositions, mummyStartingPosition, spikePositions, stonePositions } from './positions';
 
 export default class GameScene extends Phaser.Scene {
-  private readonly mapSize = 100;
-  private readonly mummyStartingPosition: Position = {
-    x: 50 * 32,
-    y: 50 * 32
-  };
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private mummy!: Mummy;
   private ghosts!: Phaser.Physics.Arcade.Group;
   private bats!: Phaser.Physics.Arcade.Group;
-  private spikes!: Phaser.Physics.Arcade.Group;
+  private spikesGroup!: Phaser.Physics.Arcade.Group;
+  private readonly spikes: Spikes[] = [];
   private staffs!: Phaser.Physics.Arcade.Group;
   private stones!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
@@ -90,41 +78,41 @@ export default class GameScene extends Phaser.Scene {
 
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });
-    const tileset = map.addTilesetImage('pyramid', 'tiles', 32, 32, 1, 2);
+    const tileset = map.addTilesetImage('pyramid', 'tiles', tileSize, tileSize, 1, 2);
 
     map.createStaticLayer('Ground', tileset);
 
-    this.spikes = this.physics.add.group({
+    this.spikesGroup = this.physics.add.group({
       classType: Spikes,
       createCallback: (gameObj) => {
         const spike = gameObj as Spikes;
         spike.body.onCollide = true;
-        spike.addCollider(this.physics.add.collider(this.bats, spike, spike.trigger, undefined, spike));
-        spike.addCollider(this.physics.add.collider(this.ghosts, spike, spike.trigger, undefined, spike));
-        spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike));
       }
     });
+    spikePositions
+      .map(slotToCenterInTile)
+      .forEach((position) => this.spikes.push(this.spikesGroup.get(position.x, position.y, 'spikes')));
 
     // prepare player before wall so it walks through doors, not over them
-    this.mummy = this.add.mummy(this.mummyStartingPosition.x, this.mummyStartingPosition.y, 'mummy');
+    this.mummy = this.add.mummy(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
+
     this.cameras.main.startFollow(this.mummy, true);
-
     const wallsLayer = map.createStaticLayer('Walls', tileset);
+
     wallsLayer.setCollisionByProperty({ collides: true });
-
     const doorLayer = map.createStaticLayer('Doors', tileset);
-    doorLayer.setCollisionByProperty({ collides: true });
 
+    doorLayer.setCollisionByProperty({ collides: true });
     this.staffs = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image,
       maxSize: 1
     });
     this.mummy.giveStaffs(this.staffs);
-
     this.stones = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image
     });
-    stonePositions.forEach((position) => {
+
+    stonePositions.map(slotToCenterInTile).forEach((position) => {
       const stone = this.stones.get(position.x, position.y, 'stone');
       stone.scale = 0.5;
     });
@@ -137,7 +125,7 @@ export default class GameScene extends Phaser.Scene {
         ghostObj.body.onCollide = true;
       }
     });
-    ghostPositions.forEach((position) => this.ghosts.get(position.x, position.y, 'ghost'));
+    ghostPositions.map(slotToPixels).forEach((position) => this.ghosts.get(position.x, position.y, 'ghost'));
 
     this.bats = this.physics.add.group({
       classType: Bat,
@@ -148,15 +136,16 @@ export default class GameScene extends Phaser.Scene {
         batObj.body.setSize(batObj.width * 0.7, batObj.height * 0.5);
       }
     });
-    batPositions.forEach((position) => this.bats.get(position.x, position.y, 'bat'));
 
-    spikePositions.map(slotToCenterInTile).forEach((position) => this.spikes.get(position.x, position.y, 'spikes'));
+    batPositions.map(slotToPixels).forEach((position) => this.bats.get(position.x, position.y, 'bat'));
 
     // add colliders
     this.physics.add.collider(this.mummy, wallsLayer);
     this.physics.add.collider(this.ghosts, wallsLayer);
     this.physics.add.collider(this.ghosts, doorLayer);
-
+    this.spikes.forEach((spike) =>
+      spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike))
+    );
     this.physics.add.collider(this.bats, wallsLayer);
     this.physics.add.collider(this.bats, doorLayer);
     this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
@@ -189,9 +178,6 @@ export default class GameScene extends Phaser.Scene {
       }
     });
 
-    // debug mode to show colliding areas
-    // debugMask(wallsLayer, this);
-
     this.renderVisibility();
   }
 
@@ -204,7 +190,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private renderVisibility() {
-    const rt = this.make.renderTexture({ height: 32 * this.mapSize, width: 32 * this.mapSize }, true);
+    const rt = this.make.renderTexture({ height: tileSize * mapSize, width: tileSize * mapSize }, true);
     this.vision = this.make.image({
       key: 'vision',
       add: false
@@ -213,7 +199,7 @@ export default class GameScene extends Phaser.Scene {
       key: 'mask',
       add: false
     });
-    rt.draw(mask, this.mapSize * 16, this.mapSize * 16);
+    rt.draw(mask, (mapSize * tileSize) / 2, (mapSize * tileSize) / 2);
 
     this.vision.scale = 9;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
