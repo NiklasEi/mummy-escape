@@ -144,13 +144,13 @@ export default class GameScene extends Phaser.Scene {
       key: 'vision',
       add: false
     });
-    const image = this.make.image({
-      key: 'vision',
-      add: false,
-      x: this.mummyStartingPosition.x,
-      y: this.mummyStartingPosition.y
+    const mask = this.make.image({
+      key: 'mask',
+      add: false
     });
-    rt.draw(image);
+    rt.draw(mask,
+        this.mapSize * 16,
+        this.mapSize * 16);
 
     this.vision.scale = 9;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
