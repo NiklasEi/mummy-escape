@@ -5,8 +5,8 @@
   "scripts": {
     "build": "webpack",
     "dev": "webpack-dev-server",
-    "lint": "prettier --config .prettierrc --ignore-path .gitignore --check '**/*.{ts,json}' && eslint -c .eslintrc.json 'src/**/*.ts'",
-    "format": "prettier --config .prettierrc --ignore-path .gitignore --write '**/*.{ts,json}' && eslint -c .eslintrc.json 'src/**/*.ts' --fix"
+    "lint": "prettier --config .prettierrc --ignore-path .gitignore --check 'src/' && eslint -c .eslintrc.json 'src/**/*.ts'",
+    "format": "prettier --config .prettierrc --ignore-path .gitignore --write 'src/' && eslint -c .eslintrc.json 'src/**/*.ts' --fix"
   },
   "repository": {
     "type": "git",
