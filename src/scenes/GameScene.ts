@@ -6,11 +6,19 @@ import { sceneEvents } from '../events/EventCenter';
 import Ghost from '../enemies/Ghost';
 import Bat from '../enemies/Bat';
 import Mummy from '../mummy/Mummy';
-import { createSpikeAnimations } from '../anims/trapAnimations';
+import Chests from '../items/Chests';
 import { Spikes } from '../traps/Spikes';
+import { createSpikeAnimations } from '../anims/trapAnimations';
 import { slotToCenterInTile, slotToPixels } from '../utils/tilePositioning';
 import { mapSize, tileSize } from '../utils/constants';
-import { batPositions, ghostPositions, mummyStartingPosition, spikePositions, stonePositions } from './positions';
+import {
+  batPositions,
+  ghostPositions,
+  mummyStartingPosition,
+  spikePositions,
+  stonePositions,
+  chestPositions
+} from './positions';
 
 export default class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -19,6 +27,8 @@ export default class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private spikesGroup!: Phaser.Physics.Arcade.Group;
   private readonly spikes: Spikes[] = [];
+  private chestGroup!: Phaser.Physics.Arcade.Group;
+  private readonly chests: Chests[] = [];
   private stones!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
@@ -72,6 +82,17 @@ export default class GameScene extends Phaser.Scene {
     spikePositions
       .map(slotToCenterInTile)
       .forEach((position) => this.spikes.push(this.spikesGroup.get(position.x, position.y, 'spikes')));
+
+    this.chestGroup = this.physics.add.group({
+      classType: Chests,
+      createCallback: (gameObj) => {
+        const chest = gameObj as Chests;
+        chest.body.onCollide = true;
+      }
+    });
+    chestPositions
+      .map(slotToCenterInTile)
+      .forEach((position) => this.chests.push(this.chestGroup.get(position.x, position.y, 'chest')));
 
     const mummyFactory = this.physics.add.group({
       classType: Mummy,
@@ -134,6 +155,9 @@ export default class GameScene extends Phaser.Scene {
     this.spikes.forEach((spike) =>
       spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike))
     );
+    this.chests.forEach((chest) =>
+          chest.addCollider(this.physics.add.collider(this.mummy, chest, chest.trigger, undefined, chest))
+        );
     this.physics.add.collider(this.bats, wallsLayer);
     this.physics.add.collider(this.bats, doorLayer);
 
