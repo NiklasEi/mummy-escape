@@ -5,8 +5,6 @@ import { sceneEvents } from '../events/EventCenter';
 
 import Ghost from '../enemies/Ghost';
 import Bat from '../enemies/Bat';
-import '../mummy/Mummy';
-// eslint-disable-next-line no-duplicate-imports
 import Mummy from '../mummy/Mummy';
 import { createSpikeAnimations } from '../anims/trapAnimations';
 import { Spikes } from '../traps/Spikes';
@@ -21,7 +19,6 @@ export default class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private spikesGroup!: Phaser.Physics.Arcade.Group;
   private readonly spikes: Spikes[] = [];
-  private staffs!: Phaser.Physics.Arcade.Group;
   private stones!: Phaser.Physics.Arcade.Group;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
@@ -35,27 +32,8 @@ export default class GameScene extends Phaser.Scene {
 
     const newDirection = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
 
-    // @ts-ignore-next-line
     this.mummy.handleDamage(newDirection);
-    // @ts-ignore-next-line
     sceneEvents.emit('health-damage', this.mummy.health);
-  }
-
-  private handleAttackGhost(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
-    this.staffs.killAndHide(obj1);
-    obj1.destroy(true);
-    this.ghosts.killAndHide(obj2);
-    obj2.destroy(true);
-  }
-
-  private handleStaffWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
-    this.staffs.killAndHide(obj1);
-    obj1.destroy(true);
-  }
-
-  private handleCollectStones(_: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
-    obj2.destroy(true);
-    this.mummy.collectStones();
   }
 
   constructor() {
@@ -93,8 +71,19 @@ export default class GameScene extends Phaser.Scene {
       .map(slotToCenterInTile)
       .forEach((position) => this.spikes.push(this.spikesGroup.get(position.x, position.y, 'spikes')));
 
+    const mummyFactory = this.physics.add.group({
+      classType: Mummy,
+      createCallback: (gameObj) => {
+        const mummy = gameObj as Mummy;
+        mummy.name = 'mummy';
+        mummy.body.onCollide = true;
+        this.physics.world.enableBody(mummy, Phaser.Physics.Arcade.DYNAMIC_BODY);
+        mummy.body.setSize(mummy.width * 0.6);
+      }
+    });
+
     // prepare player before wall so it walks through doors, not over them
-    this.mummy = this.add.mummy(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
+    this.mummy = mummyFactory.get(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
 
     this.cameras.main.startFollow(this.mummy, true);
     const wallsLayer = map.createStaticLayer('Walls', tileset);
@@ -103,11 +92,6 @@ export default class GameScene extends Phaser.Scene {
     const doorLayer = map.createStaticLayer('Doors', tileset);
 
     doorLayer.setCollisionByProperty({ collides: true });
-    this.staffs = this.physics.add.group({
-      classType: Phaser.Physics.Arcade.Image,
-      maxSize: 1
-    });
-    this.mummy.giveStaffs(this.staffs);
     this.stones = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image
     });
@@ -136,7 +120,6 @@ export default class GameScene extends Phaser.Scene {
         batObj.body.setSize(batObj.width * 0.7, batObj.height * 0.5);
       }
     });
-
     batPositions.map(slotToPixels).forEach((position) => this.bats.get(position.x, position.y, 'bat'));
 
     // add colliders
@@ -148,8 +131,6 @@ export default class GameScene extends Phaser.Scene {
     );
     this.physics.add.collider(this.bats, wallsLayer);
     this.physics.add.collider(this.bats, doorLayer);
-    this.physics.add.collider(this.staffs, this.ghosts, this.handleAttackGhost, undefined, this);
-    this.physics.add.collider(this.staffs, wallsLayer, this.handleStaffWallCollision, undefined, this);
 
     // attack by enemies
     this.playerGhostCollider = this.physics.add.collider(
@@ -167,7 +148,7 @@ export default class GameScene extends Phaser.Scene {
       this
     );
 
-    this.physics.add.collider(this.stones, this.mummy, this.handleCollectStones, undefined, this);
+    this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this);
 
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {

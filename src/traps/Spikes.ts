@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import GameObject = Phaser.GameObjects.GameObject;
 import Mummy from '../mummy/Mummy';
+import { sceneEvents } from '../events/EventCenter';
 
 export class Spikes extends Phaser.Physics.Arcade.Sprite {
   private colliders: Phaser.Physics.Arcade.Collider[] = [];
@@ -17,6 +18,7 @@ export class Spikes extends Phaser.Physics.Arcade.Sprite {
     if (entity.name === 'mummy') {
       const mummy = entity as Mummy;
       mummy.handleDamage();
+      sceneEvents.emit('health-damage', mummy.health);
     }
   }
 

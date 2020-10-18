@@ -1,14 +1,7 @@
 import * as Phaser from 'phaser';
 import { sceneEvents } from '../events/EventCenter';
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Phaser.GameObjects {
-    interface GameObjectFactory {
-      mummy(x: number, y: number, texture: string, frame?: string | number): Mummy;
-    }
-  }
-}
+import GameObject = Phaser.GameObjects.GameObject;
+import { getViewDirection } from '../utils/getViewDirection';
 
 enum HealthState {
   IDLE,
@@ -22,42 +15,18 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private _health = 3;
   private _stones = 0;
   private dead = false;
-  private staffs?: Phaser.Physics.Arcade.Group;
 
-  private throwStaff() {
-    if (!this._stones) return;
-    if (!this.staffs) return;
-    const staff = this.staffs.get(this.x, this.y, 'staff') as Phaser.Physics.Arcade.Image;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!staff) return;
+  private shootStone() {
+    if (this._stones < -1) return;
+    const stone = this.scene.physics.add.image(this.x, this.y, 'stone');
+    stone.scale = 0.3;
+    stone.body.onCollide = true;
+    const direction = getViewDirection(this.anims.currentAnim.key.split('-')[2]);
+    stone.setActive(true);
+    stone.setVisible(true);
 
-    const direction = this.anims.currentAnim.key.split('-')[2];
-    const vec = new Phaser.Math.Vector2(0, 0);
-
-    switch (direction) {
-      case 'up':
-        vec.y = -1;
-        break;
-      case 'down':
-        vec.y = 1;
-        break;
-      case 'left':
-        vec.x = -1;
-        break;
-      case 'right':
-        vec.x = 1;
-        break;
-    }
-
-    const angle = vec.angle();
-
-    staff.setActive(true);
-    staff.setVisible(true);
-    staff.setRotation(angle);
-
-    staff.x += vec.x * 16;
-    staff.y += vec.y * 16;
-    staff.setVelocity(vec.x * 300, vec.y * 300);
+    const speed = direction.scale(200);
+    stone.setVelocity(speed.x, speed.y);
   }
 
   get health() {
@@ -69,11 +38,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('mummy-idle-down');
   }
 
-  giveStaffs(staffs: Phaser.Physics.Arcade.Group) {
-    this.staffs = staffs;
-  }
-
-  collectStones() {
+  collectStone(_mummy: GameObject, stone: GameObject) {
+    stone.destroy();
     this._stones++;
   }
 
@@ -133,7 +99,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     // @ts-ignore-next-line
     if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
-      this.throwStaff();
+      this.shootStone();
       return;
     }
 
@@ -162,23 +128,3 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     }
   }
 }
-
-Phaser.GameObjects.GameObjectFactory.register('mummy', function (
-  this: Phaser.GameObjects.GameObjectFactory,
-  x: number,
-  y: number,
-  texture: string,
-  frame?: number | string
-) {
-  const sprite = new Mummy(this.scene, x, y, texture, frame);
-  sprite.name = 'mummy';
-
-  this.displayList.add(sprite);
-  this.updateList.add(sprite);
-
-  this.scene.physics.world.enableBody(sprite, Phaser.Physics.Arcade.DYNAMIC_BODY);
-
-  sprite.body.setSize(sprite.width * 0.6);
-
-  return sprite;
-});
