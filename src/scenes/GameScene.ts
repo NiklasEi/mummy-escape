@@ -156,8 +156,8 @@ export default class GameScene extends Phaser.Scene {
       spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike))
     );
     this.chests.forEach((chest) =>
-          chest.addCollider(this.physics.add.collider(this.mummy, chest, chest.trigger, undefined, chest))
-        );
+      chest.addCollider(this.physics.add.collider(this.mummy, chest, chest.trigger, undefined, chest))
+    );
     this.physics.add.collider(this.bats, wallsLayer);
     this.physics.add.collider(this.bats, doorLayer);
 
@@ -216,6 +216,18 @@ export default class GameScene extends Phaser.Scene {
     rt.mask.invertAlpha = true;
     sceneEvents.on('mummy-die-end', () => {
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
+      setTimeout(() => {
+        const playButton = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'button');
+        playButton.scale = 2;
+        playButton.setInteractive();
+        const text = this.add.text(this.mummy.x - 2.75 * tileSize, this.mummy.y + 3.3 * tileSize, 'RESTART');
+        text.scale = 2;
+
+        playButton.on('pointerup', () => {
+          playButton.setTexture('button-press');
+          setTimeout(() => this.scene.restart(), 500);
+        });
+      }, 8000);
     });
   }
 }

@@ -38,11 +38,11 @@ interface OrganPositions {
 }
 
 export const organPositions: OrganPositions = {
-  heart: {x: 34, y: 43},
-  lung: {x: 23, y: 79},
-  brain: {x: 54, y: 68},
-  stomach: {x: 75, y: 25}
-}
+  heart: { x: 34, y: 43 },
+  lung: { x: 23, y: 79 },
+  brain: { x: 54, y: 68 },
+  stomach: { x: 75, y: 25 }
+};
 
 interface ItemPositions {
   slingshot: Position;
@@ -50,6 +50,6 @@ interface ItemPositions {
 }
 
 export const itemPositions: ItemPositions = {
-  slingshot: {x: 52, y: 49},
-  torch: {x: 52, y: 50}
-}
+  slingshot: { x: 52, y: 49 },
+  torch: { x: 52, y: 50 }
+};

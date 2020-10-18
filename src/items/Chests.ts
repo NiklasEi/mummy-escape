@@ -1,7 +1,5 @@
 import * as Phaser from 'phaser';
 import GameObject = Phaser.GameObjects.GameObject;
-// import Mummy from '../mummy/Mummy';
-// import { sceneEvents } from '../events/EventCenter';
 
 export default class Chests extends Phaser.Physics.Arcade.Sprite {
   private colliders: Phaser.Physics.Arcade.Collider[] = [];
@@ -11,8 +9,7 @@ export default class Chests extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('chest-close');
   }
 
-  trigger(entity: GameObject, _chest: GameObject) {
-  console.log(entity, _chest)
+  trigger(_entity: GameObject, _chest: GameObject) {
     this.anims.play('chest-open');
   }
 
