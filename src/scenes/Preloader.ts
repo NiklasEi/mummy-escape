@@ -10,8 +10,10 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio('backgroundSound', 'assets/sounds/background.ogg');
 
     // map
-    this.load.image('tiles', 'assets/tiles-extruded.png');
-    this.load.tilemapTiledJSON('pyramid', 'assets/pyramid.json');
+    this.load.image('tiles', 'assets/map/tiles-extruded.png');
+    this.load.image('decotiles', 'assets/map/dungeon-tileset-extruded.png');
+    this.load.image('decotiles2', 'assets/map/decoration-tileset-extruded.png');
+    this.load.tilemapTiledJSON('pyramid', 'assets/map/pyramid.json');
 
     // traps
     this.load.atlas('spikes', 'assets/traps/spikes.png', 'assets/traps/spikes.json');
