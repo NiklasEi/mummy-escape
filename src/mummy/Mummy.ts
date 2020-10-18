@@ -77,28 +77,29 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this._stones++;
   }
 
-  handleDamage(direction: Phaser.Math.Vector2) {
-    //     if (this._health <= 0) return;
-
+  handleDamage(knockBack?: Phaser.Math.Vector2) {
     if (this.healthState === HealthState.DAMAGE) return;
 
-    this.setVelocity(direction.x, direction.y);
+    if (knockBack) {
+      this.setVelocity(knockBack.x, knockBack.y);
+    }
 
     this.setTint(0xff0000);
 
     this.healthState = HealthState.DAMAGE;
     this.damageTime = 0;
-    --this._health;
+    this._health = this._health - 1;
 
-    if (this._health <= 0) {
+    if (this.health <= 0) {
       this.healthState = HealthState.DEAD;
-      this.setTint(0xff0000);
-
       sceneEvents.emit('mummy-die-start');
     }
   }
 
   preUpdate(t: number, dt: number) {
+    if (this.dead) {
+      return;
+    }
     super.preUpdate(t, dt);
 
     switch (this.healthState) {
@@ -114,9 +115,6 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
         }
         break;
       case HealthState.DEAD:
-        if (this.dead) {
-          return;
-        }
         this.damageTime += dt;
 
         if (this.damageTime >= 250) {
@@ -173,6 +171,7 @@ Phaser.GameObjects.GameObjectFactory.register('mummy', function (
   frame?: number | string
 ) {
   const sprite = new Mummy(this.scene, x, y, texture, frame);
+  sprite.name = 'mummy';
 
   this.displayList.add(sprite);
   this.updateList.add(sprite);
