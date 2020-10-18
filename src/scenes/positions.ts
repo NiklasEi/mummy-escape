@@ -29,3 +29,27 @@ export const spikePositions: Position[] = [
 ];
 
 export const chestPositions: Position[] = [{ x: 52, y: 47 }];
+
+interface OrganPositions {
+  heart: Position;
+  lung: Position;
+  brain: Position;
+  stomach: Position;
+}
+
+export const organPositions: OrganPositions = {
+  heart: {x: 34, y: 43},
+  lung: {x: 23, y: 79},
+  brain: {x: 54, y: 68},
+  stomach: {x: 75, y: 25}
+}
+
+interface ItemPositions {
+  slingshot: Position;
+  torch: Position;
+}
+
+export const itemPositions: ItemPositions = {
+  slingshot: {x: 52, y: 49},
+  torch: {x: 52, y: 50}
+}
