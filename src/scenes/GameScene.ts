@@ -57,6 +57,8 @@ export default class GameScene extends Phaser.Scene {
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });
     const tileset = map.addTilesetImage('pyramid', 'tiles', tileSize, tileSize, 1, 2);
+    const decoset = map.addTilesetImage('deco', 'decotiles', tileSize, tileSize, 1, 2);
+    const decoset2 = map.addTilesetImage('items', 'decotiles2', tileSize, tileSize, 1, 2);
 
     map.createStaticLayer('Ground', tileset);
 
@@ -82,11 +84,14 @@ export default class GameScene extends Phaser.Scene {
       }
     });
 
+    const wallsLayer = map.createStaticLayer('Walls', tileset);
+    map.createStaticLayer('Deco', decoset);
+    map.createStaticLayer('Deco2', decoset2);
+
     // prepare player before wall so it walks through doors, not over them
     this.mummy = mummyFactory.get(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
 
     this.cameras.main.startFollow(this.mummy, true);
-    const wallsLayer = map.createStaticLayer('Walls', tileset);
 
     wallsLayer.setCollisionByProperty({ collides: true });
     const doorLayer = map.createStaticLayer('Doors', tileset);
