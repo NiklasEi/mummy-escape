@@ -14,29 +14,33 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private damageTime = 0;
   private _health = 3;
   private _stones = 0;
+  private activeStone?: any;
   private dead = false;
-  private _torch = false;
+  private _torch = 0;
 
   private shootStone() {
     if (!this._stones) return;
-    this._stones--;
-    const stone = this.scene.physics.add.image(this.x, this.y, 'stone');
-    stone.scale = 0.3;
-    stone.body.onCollide = true;
+    if (!!this.activeStone) return;
+
+    this.activeStone = this.scene.physics.add.image(this.x, this.y, 'stone');
+    this._stones = this._stones - 1;
+
+    this.activeStone.scale = 0.3;
+    this.activeStone.body.onCollide = true;
     const direction = getViewDirection(this.anims.currentAnim.key.split('-')[2]);
-    stone.setActive(true);
-    stone.setVisible(true);
+    this.activeStone.setActive(true);
+    this.activeStone.setVisible(true);
 
     const speed = direction.scale(200);
-    stone.setVelocity(speed.x, speed.y);
+    this.activeStone.setVelocity(speed.x, speed.y);
   }
 
   get health() {
     return this._health;
   }
 
-  get stones() {
-    return this._stones;
+  get stone() {
+    return this.activeStone;
   }
 
   get torch() {
@@ -53,9 +57,14 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this._stones++;
   }
 
-  collectTorch(_mummy: GameObject, torch: GameObject) {
+  collectTorch(torch: GameObject, _mummy: GameObject) {
     torch.destroy();
-    this._torch = true;
+    this._torch = 1;
+  }
+
+  handleStoneWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
+    obj1.destroy(true);
+    this.activeStone = null;
   }
 
   handleDamage(knockBack?: Phaser.Math.Vector2) {

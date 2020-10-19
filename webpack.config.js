@@ -20,6 +20,7 @@ module.exports = {
         ],
     },
 
+//    devtool: 'inline-source-map',
     devtool: false,
 
     resolve: {

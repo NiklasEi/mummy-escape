@@ -6,7 +6,6 @@ import { sceneEvents } from '../events/EventCenter';
 import Ghost from '../enemies/Ghost';
 import Bat from '../enemies/Bat';
 import Mummy from '../mummy/Mummy';
-import Chests from '../items/Chests';
 import { Spikes } from '../traps/Spikes';
 import { createSpikeAnimations } from '../anims/trapAnimations';
 import { slotToCenterInTile, slotToPixels } from '../utils/tilePositioning';
@@ -17,7 +16,7 @@ import {
   mummyStartingPosition,
   spikePositions,
   stonePositions,
-  chestPositions
+  itemPositions
 } from './positions';
 
 export default class GameScene extends Phaser.Scene {
@@ -27,9 +26,8 @@ export default class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private spikesGroup!: Phaser.Physics.Arcade.Group;
   private readonly spikes: Spikes[] = [];
-  private chestGroup!: Phaser.Physics.Arcade.Group;
-  private readonly chests: Chests[] = [];
   private stones!: Phaser.Physics.Arcade.Group;
+  private torch!: Phaser.GameObjects.Image;
   private vision?: Phaser.GameObjects.Image;
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
   private playerBatCollider?: Phaser.Physics.Arcade.Collider;
@@ -85,17 +83,6 @@ export default class GameScene extends Phaser.Scene {
       .map(slotToCenterInTile)
       .forEach((position) => this.spikes.push(this.spikesGroup.get(position.x, position.y, 'spikes')));
 
-    this.chestGroup = this.physics.add.group({
-      classType: Chests,
-      createCallback: (gameObj) => {
-        const chest = gameObj as Chests;
-        chest.body.onCollide = true;
-      }
-    });
-    chestPositions
-      .map(slotToCenterInTile)
-      .forEach((position) => this.chests.push(this.chestGroup.get(position.x, position.y, 'chest')));
-
     const mummyFactory = this.physics.add.group({
       classType: Mummy,
       createCallback: (gameObj) => {
@@ -108,19 +95,18 @@ export default class GameScene extends Phaser.Scene {
     });
 
     const wallsLayer = map.createStaticLayer('Walls', tileset);
+    wallsLayer.setCollisionByProperty({ collides: true });
+
     map.createStaticLayer('Deco', decoset);
     map.createStaticLayer('Deco2', decoset2);
 
     // prepare player before wall so it walks through doors, not over them
     this.mummy = mummyFactory.get(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
-    //     const mummyStones = this.mummy.stones;
-
     this.cameras.main.startFollow(this.mummy, true);
 
-    wallsLayer.setCollisionByProperty({ collides: true });
     const doorLayer = map.createStaticLayer('Doors', tileset);
-
     doorLayer.setCollisionByProperty({ collides: true });
+
     this.stones = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image
     });
@@ -132,6 +118,10 @@ export default class GameScene extends Phaser.Scene {
       const stone = this.stones.get(position.x, position.y, stoneImage);
       stone.scale = 0.4;
     });
+
+    const torchPosition = slotToCenterInTile(itemPositions.torch);
+    this.torch = this.physics.add.image(torchPosition.x, torchPosition.y, 'torch');
+    this.torch.scale = 0.5;
 
     // prepare other entities
     this.ghosts = this.physics.add.group({
@@ -161,9 +151,7 @@ export default class GameScene extends Phaser.Scene {
     this.spikes.forEach((spike) =>
       spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike))
     );
-    this.chests.forEach((chest) =>
-      chest.addCollider(this.physics.add.collider(this.mummy, chest, chest.trigger, undefined, chest))
-    );
+
     this.physics.add.collider(this.bats, wallsLayer);
     this.physics.add.collider(this.bats, doorLayer);
 
@@ -183,7 +171,19 @@ export default class GameScene extends Phaser.Scene {
       this
     );
 
-    this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this);
+    this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this.mummy);
+    this.physics.add.collider(this.torch, this.mummy, this.mummy.collectTorch, undefined, this.mummy);
+    this.physics.add.collider(this.torch, this.mummy, this.mummy.handleStoneWallCollision, undefined, this.mummy);
+
+    if (this.mummy.stone) {
+      this.physics.add.collider(
+        this.mummy.stone,
+        wallsLayer,
+        this.mummy.handleStoneWallCollision,
+        undefined,
+        this.mummy
+      );
+    }
 
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {
@@ -200,8 +200,11 @@ export default class GameScene extends Phaser.Scene {
   update() {
     if (this.vision && this.cursors) {
       this.mummy.update(this.cursors, this.vision);
-      this.vision.x = this.mummy.x;
-      this.vision.y = this.mummy.y;
+
+      if (this.mummy.torch) {
+        this.vision.x = this.mummy.x;
+        this.vision.y = this.mummy.y;
+      }
     }
   }
 
@@ -218,10 +221,9 @@ export default class GameScene extends Phaser.Scene {
     rt.draw(mask, (mapSize * tileSize) / 2, (mapSize * tileSize) / 2);
 
     this.vision.scale = 9;
-    if (this.mummy.torch) {
-      rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
-      rt.mask.invertAlpha = true;
-    }
+    rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
+    rt.mask.invertAlpha = true;
+
     sceneEvents.on('mummy-die-end', () => {
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {

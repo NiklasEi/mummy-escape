@@ -27,7 +27,6 @@ export const ghostPositions: Position[] = [
 ];
 
 export const batPositions: Position[] = [
-  { x: 49, y: 47 },
   { x: 22, y: 21 },
   { x: 29, y: 28 },
   { x: 78, y: 42 },
@@ -36,8 +35,7 @@ export const batPositions: Position[] = [
   { x: 48, y: 69 },
   { x: 42, y: 65 },
   { x: 42, y: 50 },
-  { x: 44, y: 42 },
-  { x: 52, y: 47 }
+  { x: 44, y: 42 }
 ];
 
 export const spikePositions: Position[] = [
