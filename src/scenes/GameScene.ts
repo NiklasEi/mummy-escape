@@ -77,6 +77,8 @@ export default class GameScene extends Phaser.Scene {
       createCallback: (gameObj) => {
         const spike = gameObj as Spikes;
         spike.body.onCollide = true;
+        this.physics.world.enableBody(spike, Phaser.Physics.Arcade.DYNAMIC_BODY);
+        spike.body.setSize(spike.width * 0.4, spike.height * 0.4);
       }
     });
     spikePositions
@@ -111,6 +113,7 @@ export default class GameScene extends Phaser.Scene {
 
     // prepare player before wall so it walks through doors, not over them
     this.mummy = mummyFactory.get(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
+    //     const mummyStones = this.mummy.stones;
 
     this.cameras.main.startFollow(this.mummy, true);
 
@@ -123,8 +126,11 @@ export default class GameScene extends Phaser.Scene {
     });
 
     stonePositions.map(slotToCenterInTile).forEach((position) => {
-      const stone = this.stones.get(position.x, position.y, 'stone');
-      stone.scale = 0.5;
+      const typeOfStone = Phaser.Math.Between(0, 2);
+      const stoneImage = ['stone', 'stone1', 'stone2'][typeOfStone];
+
+      const stone = this.stones.get(position.x, position.y, stoneImage);
+      stone.scale = 0.4;
     });
 
     // prepare other entities
@@ -212,8 +218,10 @@ export default class GameScene extends Phaser.Scene {
     rt.draw(mask, (mapSize * tileSize) / 2, (mapSize * tileSize) / 2);
 
     this.vision.scale = 9;
-    rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
-    rt.mask.invertAlpha = true;
+    if (this.mummy.torch) {
+      rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
+      rt.mask.invertAlpha = true;
+    }
     sceneEvents.on('mummy-die-end', () => {
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {
@@ -227,7 +235,7 @@ export default class GameScene extends Phaser.Scene {
           playButton.setTexture('button-press');
           setTimeout(() => this.scene.restart(), 500);
         });
-      }, 8000);
+      }, 5000);
     });
   }
 }

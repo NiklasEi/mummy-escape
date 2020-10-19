@@ -11,7 +11,7 @@ export default class MainMenu extends Phaser.Scene {
     this.playButton = this.add.image(this.game.renderer.width / 2, (this.game.renderer.height * 2) / 3, 'button');
     this.playButton.scale = 2;
     this.playButton.setInteractive();
-    const text = this.add.text(this.game.renderer.width / 2 - 55, (this.game.renderer.height * 2) / 3 - 25, 'START');
+    const text = this.add.text(this.game.renderer.width / 2 - 45, (this.game.renderer.height * 2) / 3 - 20, 'START');
     text.scale = 2;
 
     this.playButton.on('pointerup', () => {

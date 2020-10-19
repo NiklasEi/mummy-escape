@@ -10,10 +10,10 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio('backgroundSound', 'assets/sounds/background.ogg');
 
     // map
-    this.load.image('tiles', 'assets/map/tiles-extruded.png');
-    this.load.image('decotiles', 'assets/map/dungeon-tileset-extruded.png');
-    this.load.image('decotiles2', 'assets/map/decoration-tileset-extruded.png');
-    this.load.tilemapTiledJSON('pyramid', 'assets/map/pyramid.json');
+    this.load.image('tiles', 'assets/maps/tiles-extruded.png');
+    this.load.image('decotiles', 'assets/maps/dungeon-tileset-extruded.png');
+    this.load.image('decotiles2', 'assets/maps/decoration-tileset-extruded.png');
+    this.load.tilemapTiledJSON('pyramid', 'assets/maps/pyramid.json');
 
     // traps
     this.load.atlas('spikes', 'assets/traps/spikes.png', 'assets/traps/spikes.json');
@@ -28,6 +28,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.atlas('bat', 'assets/enemies/bat/bat.png', 'assets/enemies/bat/bat.json');
     this.load.atlas('chest', 'assets/chest/chest-full.png', 'assets/chest/chest-full.json');
     this.load.image('stone', 'assets/weapons/stone.png');
+    this.load.image('stone1', 'assets/weapons/stone1.png');
+    this.load.image('stone2', 'assets/weapons/stone2.png');
 
     // UI
     this.load.image('heart-empty', 'assets/health/heart_empty.png');

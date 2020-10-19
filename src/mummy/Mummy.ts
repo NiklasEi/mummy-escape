@@ -15,9 +15,11 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private _health = 3;
   private _stones = 0;
   private dead = false;
+  private _torch = false;
 
   private shootStone() {
-    if (this._stones < -1) return;
+    if (!this._stones) return;
+    this._stones--;
     const stone = this.scene.physics.add.image(this.x, this.y, 'stone');
     stone.scale = 0.3;
     stone.body.onCollide = true;
@@ -33,6 +35,14 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     return this._health;
   }
 
+  get stones() {
+    return this._stones;
+  }
+
+  get torch() {
+    return this._torch;
+  }
+
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
     super(scene, x, y, texture, frame);
     this.anims.play('mummy-idle-down');
@@ -41,6 +51,11 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   collectStone(_mummy: GameObject, stone: GameObject) {
     stone.destroy();
     this._stones++;
+  }
+
+  collectTorch(_mummy: GameObject, torch: GameObject) {
+    torch.destroy();
+    this._torch = true;
   }
 
   handleDamage(knockBack?: Phaser.Math.Vector2) {

@@ -4,7 +4,7 @@ export interface Position {
 }
 
 export const stonePositions: Position[] = [
-  { x: 49, y: 50 },
+  { x: 52, y: 48 },
   { x: 55, y: 36 }
 ];
 
@@ -15,20 +15,38 @@ export const mummyStartingPosition: Position = {
 
 export const ghostPositions: Position[] = [
   { x: 57, y: 25 },
+  { x: 54, y: 22 },
+  { x: 73, y: 30 },
+  { x: 72, y: 39 },
+  { x: 75, y: 60 },
+  { x: 56, y: 68 },
+  { x: 48, y: 57 },
+  { x: 22, y: 76 },
+  { x: 59, y: 31 },
   { x: 55, y: 36 }
 ];
 
 export const batPositions: Position[] = [
   { x: 49, y: 47 },
+  { x: 22, y: 21 },
+  { x: 29, y: 28 },
+  { x: 78, y: 42 },
+  { x: 59, y: 54 },
+  { x: 58, y: 70 },
+  { x: 48, y: 69 },
+  { x: 42, y: 65 },
+  { x: 42, y: 50 },
+  { x: 44, y: 42 },
   { x: 52, y: 47 }
 ];
 
 export const spikePositions: Position[] = [
-  { x: 48, y: 47 },
-  { x: 50, y: 48 }
+  { x: 49, y: 41 },
+  { x: 50, y: 43 },
+  { x: 50, y: 39 }
 ];
 
-export const chestPositions: Position[] = [{ x: 52, y: 47 }];
+export const chestPositions: Position[] = [{ x: 47, y: 52 }];
 
 interface OrganPositions {
   heart: Position;
