@@ -173,7 +173,6 @@ export default class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this.mummy);
     this.physics.add.collider(this.torch, this.mummy, this.mummy.collectTorch, undefined, this.mummy);
-    this.physics.add.collider(this.torch, this.mummy, this.mummy.handleStoneWallCollision, undefined, this.mummy);
 
     if (this.mummy.stone) {
       this.physics.add.collider(
