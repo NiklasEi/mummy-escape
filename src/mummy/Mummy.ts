@@ -17,6 +17,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private activeStone?: any;
   private dead = false;
   private _torch = 0;
+  private organs = [];
 
   private shootStone() {
     if (!this._stones) return;
@@ -24,6 +25,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     this.activeStone = this.scene.physics.add.image(this.x, this.y, 'stone');
     this._stones = this._stones - 1;
+    sceneEvents.emit('collect-stone', this._stones);
 
     this.activeStone.scale = 0.3;
     this.activeStone.body.onCollide = true;
@@ -55,11 +57,18 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   collectStone(_mummy: GameObject, stone: GameObject) {
     stone.destroy();
     this._stones++;
+    sceneEvents.emit('collect-stone', this._stones);
   }
 
   collectTorch(torch: GameObject, _mummy: GameObject) {
     torch.destroy();
     this._torch = 1;
+  }
+
+  collectOrgans(organ: GameObject, _mummy: GameObject) {
+    this.organs.push(organ.texture.key);
+    organ.destroy();
+    sceneEvents.emit('collect-organs', this.organs);
   }
 
   handleStoneWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
@@ -84,6 +93,10 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
       this.healthState = HealthState.DEAD;
       sceneEvents.emit('mummy-die-start');
     }
+  }
+
+  escape(_: Phaser.GameObjects.GameObject, door: Phaser.GameObjects.GameObject) {
+    return this.organs.length !== 4;
   }
 
   preUpdate(t: number, dt: number) {

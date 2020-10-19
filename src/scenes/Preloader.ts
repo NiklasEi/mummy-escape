@@ -31,6 +31,10 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('stone', 'assets/weapons/stone.png');
     this.load.image('stone1', 'assets/weapons/stone1.png');
     this.load.image('stone2', 'assets/weapons/stone2.png');
+    this.load.image('brain', 'assets/organs/brain.png');
+    this.load.image('heart', 'assets/organs/heart.png');
+    this.load.image('lungs', 'assets/organs/lungs.png');
+    this.load.image('stomach', 'assets/organs/stomach.png');
 
     // UI
     this.load.image('heart-empty', 'assets/health/heart_empty.png');

@@ -16,7 +16,8 @@ import {
   mummyStartingPosition,
   spikePositions,
   stonePositions,
-  itemPositions
+  itemPositions,
+  organPositions
 } from './positions';
 
 export default class GameScene extends Phaser.Scene {
@@ -29,6 +30,11 @@ export default class GameScene extends Phaser.Scene {
   private stones!: Phaser.Physics.Arcade.Group;
   private torch!: Phaser.GameObjects.Image;
   private vision?: Phaser.GameObjects.Image;
+  private heart!: Phaser.GameObjects.Image;
+  private brain!: Phaser.GameObjects.Image;
+  private stomach!: Phaser.GameObjects.Image;
+  private lungs!: Phaser.GameObjects.Image;
+
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
   private playerBatCollider?: Phaser.Physics.Arcade.Collider;
 
@@ -90,7 +96,7 @@ export default class GameScene extends Phaser.Scene {
         mummy.name = 'mummy';
         mummy.body.onCollide = true;
         this.physics.world.enableBody(mummy, Phaser.Physics.Arcade.DYNAMIC_BODY);
-        mummy.body.setSize(mummy.width * 0.6);
+        mummy.body.setSize(mummy.width * 0.6, mummy.height * 0.9);
       }
     });
 
@@ -103,9 +109,13 @@ export default class GameScene extends Phaser.Scene {
     // prepare player before wall so it walks through doors, not over them
     this.mummy = mummyFactory.get(mummyStartingPosition.x * tileSize, mummyStartingPosition.y * tileSize, 'mummy');
     this.cameras.main.startFollow(this.mummy, true);
+    this.cameras.main.zoom = 2;
 
     const doorLayer = map.createStaticLayer('Doors', tileset);
     doorLayer.setCollisionByProperty({ collides: true });
+
+    const escapeDoor = map.createStaticLayer('EscapeDoor', tileset);
+    escapeDoor.setCollisionByProperty({ collides: true });
 
     this.stones = this.physics.add.group({
       classType: Phaser.Physics.Arcade.Image
@@ -122,6 +132,22 @@ export default class GameScene extends Phaser.Scene {
     const torchPosition = slotToCenterInTile(itemPositions.torch);
     this.torch = this.physics.add.image(torchPosition.x, torchPosition.y, 'torch');
     this.torch.scale = 0.5;
+
+    const heartPosition = slotToCenterInTile(organPositions.heart);
+    this.heart = this.physics.add.image(heartPosition.x, heartPosition.y, 'heart');
+    this.heart.scale = 0.5;
+
+    const brainPosition = slotToCenterInTile(organPositions.brain);
+    this.brain = this.physics.add.image(brainPosition.x, brainPosition.y, 'brain');
+    this.brain.scale = 0.5;
+
+    const lungsPosition = slotToCenterInTile(organPositions.lungs);
+    this.lungs = this.physics.add.image(lungsPosition.x, lungsPosition.y, 'lungs');
+    this.lungs.scale = 0.5;
+
+    const stomachPosition = slotToCenterInTile(organPositions.stomach);
+    this.stomach = this.physics.add.image(stomachPosition.x, stomachPosition.y, 'stomach');
+    this.stomach.scale = 0.5;
 
     // prepare other entities
     this.ghosts = this.physics.add.group({
@@ -173,6 +199,11 @@ export default class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this.mummy);
     this.physics.add.collider(this.torch, this.mummy, this.mummy.collectTorch, undefined, this.mummy);
+    this.physics.add.collider(this.brain, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
+    this.physics.add.collider(this.heart, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
+    this.physics.add.collider(this.lungs, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
+    this.physics.add.collider(this.stomach, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
+    this.physics.add.collider(escapeDoor, this.mummy, undefined, this.mummy.escape, this.mummy);
 
     if (this.mummy.stone) {
       this.physics.add.collider(
@@ -227,16 +258,14 @@ export default class GameScene extends Phaser.Scene {
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {
         const playButton = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'button');
-        playButton.scale = 2;
         playButton.setInteractive();
-        const text = this.add.text(this.mummy.x - 2.75 * tileSize, this.mummy.y + 3.3 * tileSize, 'RESTART');
-        text.scale = 2;
+        const text = this.add.text(this.mummy.x - 32, this.mummy.y + 3.7 * tileSize, 'RESTART');
 
         playButton.on('pointerup', () => {
           playButton.setTexture('button-press');
           setTimeout(() => this.scene.restart(), 500);
         });
-      }, 5000);
+      }, 2000);
     });
   }
 }
