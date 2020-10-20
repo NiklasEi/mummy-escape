@@ -54,6 +54,7 @@ export default class GameUI extends Phaser.Scene {
 
     const stone = this.physics.add.image(10, 36, 'stone');
     stone.scale = 0.5;
+    this.stones = 0;
     this.text = this.add.text(26, 30, this.stones.toString());
 
     sceneEvents.on('health-damage', this.handleHealthDamage, this);

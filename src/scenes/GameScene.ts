@@ -22,6 +22,7 @@ import {
   organPositions,
   torchPositions
 } from './positions';
+import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
 
 export default class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -218,15 +219,7 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.stomach, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(escapeDoor, this.mummy, undefined, this.mummy.escape, this.mummy);
 
-    sceneEvents.on('stone-thrown', () => {
-      this.physics.add.collider(
-        this.mummy.stone,
-        wallsLayer,
-        this.mummy.handleStoneWallCollision,
-        undefined,
-        this.mummy
-      );
-    });
+    sceneEvents.on('stone-thrown', this.addStoneCollider, this);
 
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {
@@ -251,6 +244,10 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  addStoneCollider(wallsLayer: StaticTilemapLayer) {
+    this.physics.add.collider(this.mummy.stone, wallsLayer, this.mummy.handleStoneWallCollision, undefined, this.mummy);
+  }
+
   private renderVisibility() {
     const rt = this.make.renderTexture({ height: tileSize * mapSize, width: tileSize * mapSize }, true);
     this.vision = this.make.image({
@@ -268,6 +265,10 @@ export default class GameScene extends Phaser.Scene {
     rt.mask.invertAlpha = true;
 
     sceneEvents.on('mummy-die-end', () => {
+      if (this.vision) {
+        this.vision.x = this.mummy.x;
+        this.vision.y = this.mummy.y;
+      }
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {
         const playButton = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'button');

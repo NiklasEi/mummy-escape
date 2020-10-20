@@ -60,10 +60,6 @@ export const organPositions: OrganPositions = {
   lungs: { x: 23, y: 79 },
   brain: { x: 54, y: 68 },
   stomach: { x: 75, y: 25 }
-  //   heart: { x: 48, y: 52 },
-  //   lungs: { x: 49, y: 52 },
-  //   brain: { x: 50, y: 52 },
-  //   stomach: { x: 51, y: 52 }
 };
 
 interface ItemPositions {

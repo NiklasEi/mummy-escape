@@ -26,7 +26,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this.activeStone = this.scene.physics.add.image(this.x, this.y, 'stone');
     this._stones = this._stones - 1;
     sceneEvents.emit('collect-stone', this._stones);
-
+    this.activeStone.name = 'thrown stone';
     this.activeStone.scale = 0.3;
     this.activeStone.body.onCollide = true;
     const direction = getViewDirection(this.anims.currentAnim.key.split('-')[2]);
@@ -74,8 +74,10 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   handleStoneWallCollision(obj1: Phaser.GameObjects.GameObject, _: Phaser.GameObjects.GameObject) {
-    obj1.destroy(true);
-    this.activeStone = null;
+    if (obj1.name === 'thrown stone') {
+      obj1.destroy(true);
+      this.activeStone = null;
+    }
   }
 
   handleDamage(knockBack?: Phaser.Math.Vector2) {
