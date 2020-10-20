@@ -17,7 +17,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private activeStone?: any;
   private dead = false;
   private _torch = 0;
-  private organs = [];
+  private readonly organs: string[] = [];
 
   private shootStone() {
     if (!this._stones) return;
@@ -35,6 +35,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     const speed = direction.scale(200);
     this.activeStone.setVelocity(speed.x, speed.y);
+    sceneEvents.emit('stone-thrown');
   }
 
   get health() {
@@ -66,7 +67,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   collectOrgans(organ: GameObject, _mummy: GameObject) {
-    this.organs.push(organ.texture.key);
+    const organImage = organ as Phaser.GameObjects.Image
+    this.organs.push(organImage.texture.key);
     organ.destroy();
     sceneEvents.emit('collect-organs', this.organs);
   }
@@ -95,7 +97,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  escape(_: Phaser.GameObjects.GameObject, door: Phaser.GameObjects.GameObject) {
+  escape(_: Phaser.GameObjects.GameObject, _door: Phaser.GameObjects.GameObject) {
     return this.organs.length !== 4;
   }
 

@@ -5,6 +5,8 @@ export interface Position {
 
 export const stonePositions: Position[] = [
   { x: 52, y: 48 },
+  { x: 52, y: 49 },
+  { x: 51, y: 48 },
   { x: 55, y: 36 }
 ];
 

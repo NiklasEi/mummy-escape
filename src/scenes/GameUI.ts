@@ -24,7 +24,7 @@ export default class GameUI extends Phaser.Scene {
     this.text.setText(this.stones);
   }
 
-  private handleOrgans(organs: any) {
+  private handleOrgans(organs: string[]) {
     let space = 0;
     organs.forEach((organ) => {
       const newOrgan = this.physics.add.image(10 + space * 20, 62, organ);

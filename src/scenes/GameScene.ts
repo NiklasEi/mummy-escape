@@ -205,7 +205,7 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.stomach, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(escapeDoor, this.mummy, undefined, this.mummy.escape, this.mummy);
 
-    if (this.mummy.stone) {
+    sceneEvents.on('stone-thrown', () => {
       this.physics.add.collider(
         this.mummy.stone,
         wallsLayer,
@@ -213,7 +213,7 @@ export default class GameScene extends Phaser.Scene {
         undefined,
         this.mummy
       );
-    }
+    });
 
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {
@@ -259,7 +259,7 @@ export default class GameScene extends Phaser.Scene {
       setTimeout(() => {
         const playButton = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'button');
         playButton.setInteractive();
-        const text = this.add.text(this.mummy.x - 32, this.mummy.y + 3.7 * tileSize, 'RESTART');
+        this.add.text(this.mummy.x - 32, this.mummy.y + 3.7 * tileSize, 'RESTART');
 
         playButton.on('pointerup', () => {
           playButton.setTexture('button-press');
