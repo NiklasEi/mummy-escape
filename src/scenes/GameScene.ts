@@ -1,11 +1,13 @@
 import * as Phaser from 'phaser';
 import { createBatAnims, createGhostAnims } from '../anims/enemyAnims';
 import { createMummyAnims } from '../anims/mummyAnims';
+import { createTorchAnims } from '../anims/torchAnims';
 import { sceneEvents } from '../events/EventCenter';
 
 import Ghost from '../enemies/Ghost';
 import Bat from '../enemies/Bat';
 import Mummy from '../mummy/Mummy';
+import Torch from '../items/Torch';
 import { Spikes } from '../traps/Spikes';
 import { createSpikeAnimations } from '../anims/trapAnimations';
 import { slotToCenterInTile, slotToPixels } from '../utils/tilePositioning';
@@ -17,7 +19,8 @@ import {
   spikePositions,
   stonePositions,
   itemPositions,
-  organPositions
+  organPositions,
+  torchPositions
 } from './positions';
 
 export default class GameScene extends Phaser.Scene {
@@ -29,6 +32,7 @@ export default class GameScene extends Phaser.Scene {
   private readonly spikes: Spikes[] = [];
   private stones!: Phaser.Physics.Arcade.Group;
   private torch!: Phaser.GameObjects.Image;
+  private burningTorch!: Phaser.GameObjects.Group;
   private vision?: Phaser.GameObjects.Image;
   private heart!: Phaser.GameObjects.Image;
   private brain!: Phaser.GameObjects.Image;
@@ -65,6 +69,7 @@ export default class GameScene extends Phaser.Scene {
     createGhostAnims(this.anims);
     createBatAnims(this.anims);
     createSpikeAnimations(this.anims);
+    createTorchAnims(this.anims);
 
     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
 
@@ -169,6 +174,14 @@ export default class GameScene extends Phaser.Scene {
       }
     });
     batPositions.map(slotToPixels).forEach((position) => this.bats.get(position.x, position.y, 'bat'));
+
+    this.burningTorch = this.physics.add.group({
+      classType: Torch
+    });
+
+    torchPositions
+      .map(slotToCenterInTile)
+      .forEach((position) => this.burningTorch.get(position.x, position.y, 'torch-anim'));
 
     // add colliders
     this.physics.add.collider(this.mummy, wallsLayer);

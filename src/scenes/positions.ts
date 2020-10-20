@@ -75,3 +75,8 @@ export const itemPositions: ItemPositions = {
   slingshot: { x: 52, y: 49 },
   torch: { x: 52, y: 50 }
 };
+
+export const torchPositions: Position[] = [
+  { x: 21, y: 31 },
+  { x: 21, y: 34 }
+];

@@ -67,7 +67,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   collectOrgans(organ: GameObject, _mummy: GameObject) {
-    const organImage = organ as Phaser.GameObjects.Image
+    const organImage = organ as Phaser.GameObjects.Image;
     this.organs.push(organImage.texture.key);
     organ.destroy();
     sceneEvents.emit('collect-organs', this.organs);
