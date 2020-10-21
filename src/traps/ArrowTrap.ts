@@ -12,8 +12,6 @@ export class ArrowTrap {
     private readonly triggerPosition: Position,
     private readonly arrowStartPosition: Position
   ) {
-      // eslint-disable-next-line no-console
-      console.log("placing trigger")
     this.trigger = this.scene.physics.add.image(this.triggerPosition.x, this.triggerPosition.y, 'trigger');
     this.trigger.scale = 0.3;
     this.trigger.body.onCollide = true;
@@ -21,8 +19,6 @@ export class ArrowTrap {
 
   shoot() {
     if (this.triggered) return;
-      // eslint-disable-next-line no-console
-      console.log("shoot")
     this.triggered = true;
     this.destroyTriggerColliders();
 

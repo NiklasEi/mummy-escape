@@ -16,7 +16,7 @@ export default class Ghost extends Phaser.Physics.Arcade.Sprite {
       delay: 1000 + Phaser.Math.Between(0, 500),
       callback: () => {
         if (Phaser.Math.Between(0, 3) > 1) return;
-        this.direction = randomDirection(this.direction)
+        this.direction = randomDirection(this.direction);
       },
       loop: true
     });
