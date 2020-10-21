@@ -25,11 +25,9 @@ export default class GameUI extends Phaser.Scene {
   }
 
   private handleOrgans(organs: string[]) {
-    let space = 0;
-    organs.forEach((organ) => {
-      const newOrgan = this.physics.add.image(10 + space * 20, 62, organ);
-      newOrgan.scale = 0.5;
-      space++;
+    organs.forEach((organ, index) => {
+      const newOrgan = this.physics.add.image(20 + index * 30, 85, organ);
+      newOrgan.scale = 0.7;
     });
   }
 
@@ -45,17 +43,19 @@ export default class GameUI extends Phaser.Scene {
     this.hearts.createMultiple({
       key: 'heart-full',
       setXY: {
-        x: 10,
-        y: 10,
-        stepX: 16
+        x: 20,
+        y: 20,
+        stepX: 32
       },
+      'setScale.x': 2,
+      'setScale.y': 2,
       quantity: 3
     });
 
-    const stone = this.physics.add.image(10, 36, 'stone');
-    stone.scale = 0.5;
+    const stone = this.physics.add.image(20, 55, 'stone');
+    stone.scale = 0.7;
     this.stones = 0;
-    this.text = this.add.text(26, 30, this.stones.toString());
+    this.text = this.add.text(35, 45, this.stones.toString());
 
     sceneEvents.on('health-damage', this.handleHealthDamage, this);
     sceneEvents.on('collect-stone', this.handleStone, this);

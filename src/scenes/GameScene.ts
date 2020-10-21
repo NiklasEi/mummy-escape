@@ -28,7 +28,7 @@ import { ArrowTrap } from '../traps/ArrowTrap';
 
 export default class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-  private mummy!: Mummy;
+  public mummy!: Mummy;
   private ghosts!: Phaser.Physics.Arcade.Group;
   private bats!: Phaser.Physics.Arcade.Group;
   private spikesGroup!: Phaser.Physics.Arcade.Group;
@@ -42,6 +42,9 @@ export default class GameScene extends Phaser.Scene {
   private brain!: Phaser.GameObjects.Image;
   private stomach!: Phaser.GameObjects.Image;
   private lungs!: Phaser.GameObjects.Image;
+
+  public wallsLayer!: StaticTilemapLayer;
+  public doorsLayer!: StaticTilemapLayer;
 
   private playerGhostCollider?: Phaser.Physics.Arcade.Collider;
   private playerBatCollider?: Phaser.Physics.Arcade.Collider;
@@ -112,8 +115,8 @@ export default class GameScene extends Phaser.Scene {
       }
     });
 
-    const wallsLayer = map.createStaticLayer('Walls', tileset);
-    wallsLayer.setCollisionByProperty({ collides: true });
+    this.wallsLayer = map.createStaticLayer('Walls', tileset);
+    this.wallsLayer.setCollisionByProperty({ collides: true });
 
     map.createStaticLayer('Deco', decoset);
     map.createStaticLayer('Deco2', decoset2);
@@ -123,8 +126,8 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.mummy, true);
     this.cameras.main.zoom = 2;
 
-    const doorLayer = map.createStaticLayer('Doors', tileset);
-    doorLayer.setCollisionByProperty({ collides: true });
+    this.doorsLayer = map.createStaticLayer('Doors', tileset);
+    this.doorsLayer.setCollisionByProperty({ collides: true });
 
     const escapeDoor = map.createStaticLayer('EscapeDoor', tileset);
     escapeDoor.setCollisionByProperty({ collides: true });
@@ -191,20 +194,20 @@ export default class GameScene extends Phaser.Scene {
       .forEach((position) => this.burningTorch.get(position.x, position.y, 'torch-anim'));
 
     // add colliders
-    this.physics.add.collider(this.mummy, wallsLayer);
-    this.physics.add.collider(this.ghosts, wallsLayer);
-    this.physics.add.collider(this.ghosts, doorLayer);
+    this.physics.add.collider(this.mummy, this.wallsLayer);
+    this.physics.add.collider(this.ghosts, this.wallsLayer);
+    this.physics.add.collider(this.ghosts, this.doorsLayer);
     this.spikes.forEach((spike) =>
-      spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike))
+      spike.addCollider(this.physics.add.collider(this.mummy, spike, undefined, spike.trigger, spike))
     );
     this.arrowTraps.forEach((arrowTrap) =>
       arrowTrap.addTriggerCollider(
-        this.physics.add.collider(this.mummy, arrowTrap.trigger, arrowTrap.shoot, () => !arrowTrap.triggered, arrowTrap)
+        this.physics.add.collider(this.mummy, arrowTrap.trigger, undefined, arrowTrap.shoot, arrowTrap)
       )
     );
 
-    this.physics.add.collider(this.bats, wallsLayer);
-    this.physics.add.collider(this.bats, doorLayer);
+    this.physics.add.collider(this.bats, this.wallsLayer);
+    this.physics.add.collider(this.bats, this.doorsLayer);
 
     // attack by enemies
     this.playerGhostCollider = this.physics.add.collider(
@@ -274,6 +277,10 @@ export default class GameScene extends Phaser.Scene {
     this.vision.scale = 9;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
     rt.mask.invertAlpha = true;
+
+    const initialVision = slotToCenterInTile(itemPositions.torch);
+    this.vision.x = initialVision.x;
+    this.vision.y = initialVision.y;
 
     sceneEvents.on('mummy-die-end', () => {
       if (this.vision) {

@@ -85,6 +85,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     if (knockBack) {
       this.setVelocity(knockBack.x, knockBack.y);
+    } else {
+      this.setVelocity(0, 0);
     }
 
     this.setTint(0xff0000);
@@ -116,6 +118,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
         this.damageTime += dt;
 
         if (this.damageTime >= 250) {
+          sceneEvents.emit('mummy-state-idle');
           this.healthState = HealthState.IDLE;
           this.setTint(0xffffff);
           this.damageTime = 0;

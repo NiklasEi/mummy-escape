@@ -11,15 +11,16 @@ export class Spikes extends Phaser.Physics.Arcade.Sprite {
     this.anims.play('spikes-idle');
   }
 
-  trigger(entity: GameObject, _spike: GameObject) {
+  trigger(entity: GameObject, _spike: GameObject): boolean {
     this.anims.play('spikes-trigger');
     this.setVelocity(0, 0);
     this.destroyColliders();
     if (entity.name === 'mummy') {
       const mummy = entity as Mummy;
-      mummy.handleDamage();
+      mummy.handleDamage(undefined);
       sceneEvents.emit('health-damage', mummy.health);
     }
+    return false;
   }
 
   addCollider(collider: Phaser.Physics.Arcade.Collider) {
