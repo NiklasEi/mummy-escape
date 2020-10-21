@@ -20,9 +20,11 @@ import {
   stonePositions,
   itemPositions,
   organPositions,
-  torchPositions
+  torchPositions,
+  arrowTrapPositions
 } from './positions';
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
+import { ArrowTrap } from '../traps/ArrowTrap';
 
 export default class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -31,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
   private bats!: Phaser.Physics.Arcade.Group;
   private spikesGroup!: Phaser.Physics.Arcade.Group;
   private readonly spikes: Spikes[] = [];
+  private arrowTraps: ArrowTrap[] = [];
   private stones!: Phaser.Physics.Arcade.Group;
   private torch!: Phaser.GameObjects.Image;
   private burningTorch!: Phaser.GameObjects.Group;
@@ -94,6 +97,9 @@ export default class GameScene extends Phaser.Scene {
     spikePositions
       .map(slotToCenterInTile)
       .forEach((position) => this.spikes.push(this.spikesGroup.get(position.x, position.y, 'spikes')));
+    this.arrowTraps = arrowTrapPositions.map(
+      (trap) => new ArrowTrap(this, slotToCenterInTile(trap.trigger), slotToCenterInTile(trap.arrowStart))
+    );
 
     const mummyFactory = this.physics.add.group({
       classType: Mummy,
@@ -190,6 +196,11 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.ghosts, doorLayer);
     this.spikes.forEach((spike) =>
       spike.addCollider(this.physics.add.collider(this.mummy, spike, spike.trigger, undefined, spike))
+    );
+    this.arrowTraps.forEach((arrowTrap) =>
+      arrowTrap.addTriggerCollider(
+        this.physics.add.collider(this.mummy, arrowTrap.trigger, arrowTrap.shoot, () => !arrowTrap.triggered, arrowTrap)
+      )
     );
 
     this.physics.add.collider(this.bats, wallsLayer);

@@ -76,3 +76,41 @@ export const torchPositions: Position[] = [
   { x: 21, y: 31 },
   { x: 21, y: 34 }
 ];
+
+interface ArrowTrap {
+  trigger: Position;
+  arrowStart: Position;
+}
+
+export const arrowTrapPositions: ArrowTrap[] = [
+  {
+    trigger: {
+      x: 33,
+      y: 58
+    },
+    arrowStart: {
+      x: 20,
+      y: 58
+    }
+  },
+  {
+    trigger: {
+      x: 32,
+      y: 57
+    },
+    arrowStart: {
+      x: 20,
+      y: 57
+    }
+  },
+  {
+    trigger: {
+      x: 56,
+      y: 32
+    },
+    arrowStart: {
+      x: 65,
+      y: 32
+    }
+  }
+];

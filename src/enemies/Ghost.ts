@@ -13,8 +13,11 @@ export default class Ghost extends Phaser.Physics.Arcade.Sprite {
     scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileCollision, this);
 
     this.moveEvent = scene.time.addEvent({
-      delay: 2000,
-      callback: () => (this.direction = randomDirection(this.direction)),
+      delay: 1000 + Phaser.Math.Between(0, 500),
+      callback: () => {
+        if (Phaser.Math.Between(0, 3) > 1) return;
+        this.direction = randomDirection(this.direction)
+      },
       loop: true
     });
   }

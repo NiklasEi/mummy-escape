@@ -12,8 +12,11 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
     this.direction = randomDirection();
 
     this.moveEvent = scene.time.addEvent({
-      delay: 2000,
-      callback: () => (this.direction = randomDirection(this.direction)),
+      delay: 1000 + Phaser.Math.Between(0, 500),
+      callback: () => {
+        if (Phaser.Math.Between(0, 3) > 1) return;
+        this.direction = randomDirection(this.direction)
+      },
       loop: true
     });
   }

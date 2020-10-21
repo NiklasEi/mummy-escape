@@ -20,8 +20,8 @@ module.exports = {
         ],
     },
 
-    devtool: 'inline-source-map',
-    //devtool: false,
+    //devtool: 'inline-source-map',
+    devtool: false,
 
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],

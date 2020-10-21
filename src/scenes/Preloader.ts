@@ -17,6 +17,8 @@ export default class Preloader extends Phaser.Scene {
 
     // traps
     this.load.atlas('spikes', 'assets/traps/spikes.png', 'assets/traps/spikes.json');
+    this.load.image('arrow', 'assets/traps/arrow.png');
+    this.load.image('trigger', 'assets/traps/trigger.png');
 
     // vision
     this.load.image('vision', 'assets/vision.png');
