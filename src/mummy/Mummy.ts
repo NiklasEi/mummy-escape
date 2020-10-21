@@ -2,22 +2,30 @@ import * as Phaser from 'phaser';
 import { sceneEvents } from '../events/EventCenter';
 import GameObject = Phaser.GameObjects.GameObject;
 import { getViewDirection } from '../utils/getViewDirection';
+import GameScene from '../scenes/GameScene';
 
-enum HealthState {
+export enum HealthState {
   IDLE,
   DAMAGE,
   DEAD
 }
 
 export default class Mummy extends Phaser.Physics.Arcade.Sprite {
-  private healthState = HealthState.IDLE;
+  public healthState = HealthState.IDLE;
   private damageTime = 0;
   private _health = 3;
   private _stones = 0;
   private activeStone?: any;
   private dead = false;
   private _torch = 0;
+  private readonly gameScene: GameScene;
   private readonly organs: string[] = [];
+
+  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
+    super(scene, x, y, texture, frame);
+    this.gameScene = scene as GameScene;
+    this.anims.play('mummy-idle-down');
+  }
 
   private shootStone() {
     if (!this._stones) return;
@@ -33,9 +41,37 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this.activeStone.setActive(true);
     this.activeStone.setVisible(true);
 
+    this.scene.physics.add.collider(
+      this.gameScene.ghosts,
+      this.activeStone,
+      this.handleStoneEnemyCollision,
+      undefined,
+      this
+    );
+    this.scene.physics.add.collider(
+      this.gameScene.bats,
+      this.activeStone,
+      this.handleStoneEnemyCollision,
+      undefined,
+      this
+    );
+    this.scene.physics.add.collider(
+      this.activeStone,
+      this.gameScene.wallsLayer,
+      this.handleStoneWallCollision,
+      undefined,
+      this
+    );
+    this.scene.physics.add.collider(
+      this.activeStone,
+      this.gameScene.doorsLayer,
+      this.handleStoneWallCollision,
+      undefined,
+      this
+    );
+
     const speed = direction.scale(200);
     this.activeStone.setVelocity(speed.x, speed.y);
-    sceneEvents.emit('stone-thrown');
   }
 
   get health() {
@@ -48,11 +84,6 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   get torch() {
     return this._torch;
-  }
-
-  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
-    super(scene, x, y, texture, frame);
-    this.anims.play('mummy-idle-down');
   }
 
   collectStone(_mummy: GameObject, stone: GameObject) {
@@ -78,6 +109,12 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
       obj1.destroy(true);
       this.activeStone = null;
     }
+  }
+
+  handleStoneEnemyCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    obj1.destroy();
+    obj2.destroy();
+    this.activeStone = null;
   }
 
   handleDamage(knockBack?: Phaser.Math.Vector2) {

@@ -29,8 +29,8 @@ import { ArrowTrap } from '../traps/ArrowTrap';
 export default class GameScene extends Phaser.Scene {
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   public mummy!: Mummy;
-  private ghosts!: Phaser.Physics.Arcade.Group;
-  private bats!: Phaser.Physics.Arcade.Group;
+  public ghosts!: Phaser.Physics.Arcade.Group;
+  public bats!: Phaser.Physics.Arcade.Group;
   private spikesGroup!: Phaser.Physics.Arcade.Group;
   private readonly spikes: Spikes[] = [];
   private arrowTraps: ArrowTrap[] = [];
@@ -233,8 +233,6 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.stomach, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(escapeDoor, this.mummy, undefined, this.mummy.escape, this.mummy);
 
-    sceneEvents.on('stone-thrown', this.addStoneCollider, this);
-
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {
         this.playerGhostCollider.destroy();
@@ -256,10 +254,6 @@ export default class GameScene extends Phaser.Scene {
         this.vision.y = this.mummy.y;
       }
     }
-  }
-
-  addStoneCollider(wallsLayer: StaticTilemapLayer) {
-    this.physics.add.collider(this.mummy.stone, wallsLayer, this.mummy.handleStoneWallCollision, undefined, this.mummy);
   }
 
   private renderVisibility() {

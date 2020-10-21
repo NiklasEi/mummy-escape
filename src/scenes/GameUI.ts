@@ -1,11 +1,18 @@
 import * as Phaser from 'phaser';
 
 import { sceneEvents } from '../events/EventCenter';
+import { Organs } from '../mummy/Organs';
 
 export default class GameUI extends Phaser.Scene {
   private hearts!: Phaser.GameObjects.Group;
   private stones = 0;
   private text!: any;
+  private readonly organs: string[];
+
+  constructor() {
+    super({ key: 'gameUI' });
+    this.organs = [Organs.BRAIN, Organs.HEART, Organs.LUNGS, Organs.STOMACH];
+  }
 
   private handleHealthDamage(health: number) {
     this.hearts.children.each((childObj, index) => {
@@ -25,14 +32,13 @@ export default class GameUI extends Phaser.Scene {
   }
 
   private handleOrgans(organs: string[]) {
-    organs.forEach((organ, index) => {
+    this.organs.forEach((organ, index) => {
       const newOrgan = this.physics.add.image(20 + index * 30, 85, organ);
       newOrgan.scale = 0.7;
+      if (!organs.includes(organ)) {
+        newOrgan.setTint(0x808080);
+      }
     });
-  }
-
-  constructor() {
-    super({ key: 'gameUI' });
   }
 
   create() {
@@ -56,6 +62,8 @@ export default class GameUI extends Phaser.Scene {
     stone.scale = 0.7;
     this.stones = 0;
     this.text = this.add.text(35, 45, this.stones.toString());
+
+    this.handleOrgans([]);
 
     sceneEvents.on('health-damage', this.handleHealthDamage, this);
     sceneEvents.on('collect-stone', this.handleStone, this);
