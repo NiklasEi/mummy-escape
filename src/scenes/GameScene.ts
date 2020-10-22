@@ -150,12 +150,13 @@ export default class GameScene extends Phaser.Scene {
       classType: Phaser.Physics.Arcade.Image
     });
 
-    stonePositions.map(slotToCenterInTile).forEach((position) => {
+    const stones = stonePositions.map(slotToCenterInTile).map((position) => {
       const typeOfStone = Phaser.Math.Between(0, 2);
       const stoneImage = ['stone', 'stone1', 'stone2'][typeOfStone];
 
       const stone = this.stones.get(position.x, position.y, stoneImage);
       stone.scale = 0.4;
+      return stone;
     });
 
     const torchPosition = slotToCenterInTile(itemPositions.torch);
@@ -177,6 +178,18 @@ export default class GameScene extends Phaser.Scene {
     const stomachPosition = slotToCenterInTile(organPositions.stomach);
     this.stomach = this.physics.add.image(stomachPosition.x, stomachPosition.y, 'stomach');
     this.stomach.scale = 0.5;
+
+    [...stones, this.torch, this.heart, this.brain, this.lungs, this.stomach].forEach(
+      (obj: Phaser.GameObjects.Image) => {
+        this.tweens.add({
+          targets: obj,
+          y: obj.y - 10,
+          yoyo: true,
+          duration: 2000,
+          loop: -1
+        });
+      }
+    );
 
     // prepare other entities
     this.ghosts = this.physics.add.group({
