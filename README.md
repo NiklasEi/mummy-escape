@@ -27,4 +27,5 @@ HTML5 game written with Phaser3 using typescript + webpack
     * Used in the background mixed with other sounds
 * [Spooky Ambiance](https://freesound.org/people/OllieOllie/sounds/262351/) by [OllieOllie](https://freesound.org/people/OllieOllie/) [[CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)]
     * Used in the background mixed with other sounds
-
+* [Creepy Ghost Voice 2](https://freesound.org/people/RICHERlandTV/sounds/337641/) by [RICHERlandTV](https://freesound.org/people/RICHERlandTV/) (CC0 1.0)
+* [CompoundBow_CloseTarget.wav](https://freesound.org/people/MHockett/sounds/249160/) by [MHockett](https://freesound.org/people/MHockett/) (CC0)

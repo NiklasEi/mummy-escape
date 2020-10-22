@@ -10,6 +10,13 @@ export enum HealthState {
   DEAD
 }
 
+interface Control {
+  W: any;
+  A: any;
+  S: any;
+  D: any;
+}
+
 export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   public healthState = HealthState.IDLE;
   private damageTime = 0;
@@ -20,11 +27,13 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private _torch = 0;
   private readonly gameScene: GameScene;
   private readonly organs: string[] = [];
+  private readonly keys: Control;
 
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
     super(scene, x, y, texture, frame);
     this.gameScene = scene as GameScene;
     this.anims.play('mummy-idle-down');
+    this.keys = scene.input.keyboard.addKeys('W,S,A,D') as Control;
   }
 
   private shootStone() {
@@ -185,19 +194,19 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     }
 
     const speed = 125;
-    if (cursors.left?.isDown) {
+    if (cursors.left?.isDown || this.keys.A.isDown) {
       this.anims.play('mummy-run-left', true);
       this.setVelocity(-speed, 0);
       vision.setAngle(180);
-    } else if (cursors.right?.isDown) {
+    } else if (cursors.right?.isDown || this.keys.D.isDown) {
       this.anims.play('mummy-run-right', true);
       this.setVelocity(speed, 0);
       vision.setAngle(0);
-    } else if (cursors.up?.isDown) {
+    } else if (cursors.up?.isDown || this.keys.W.isDown) {
       this.anims.play('mummy-run-up', true);
       this.setVelocity(0, -speed);
       vision.setAngle(-90);
-    } else if (cursors.down?.isDown) {
+    } else if (cursors.down?.isDown || this.keys.S.isDown) {
       this.anims.play('mummy-run-down', true);
       this.setVelocity(0, speed);
       vision.setAngle(90);

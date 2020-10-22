@@ -42,6 +42,7 @@ export default class GameScene extends Phaser.Scene {
   private brain!: Phaser.GameObjects.Image;
   private stomach!: Phaser.GameObjects.Image;
   private lungs!: Phaser.GameObjects.Image;
+  private soundEvent?: Phaser.Time.TimerEvent;
 
   public wallsLayer!: StaticTilemapLayer;
   public doorsLayer!: StaticTilemapLayer;
@@ -79,6 +80,19 @@ export default class GameScene extends Phaser.Scene {
     createTorchAnims(this.anims);
 
     this.sound.play('backgroundSound', { loop: true, volume: 0.5 });
+
+    if (this.soundEvent) {
+      this.soundEvent.destroy();
+    }
+    this.soundEvent = this.time.addEvent({
+      delay: 200,
+      callback: () => {
+        const index = Phaser.Math.Between(0, 500);
+        if (index >= 3) return;
+        this.sound.play(`creepy-${index + 1}`, { loop: false, volume: 1 });
+      },
+      loop: true
+    });
 
     // prepare map
     const map = this.make.tilemap({ key: 'pyramid' });

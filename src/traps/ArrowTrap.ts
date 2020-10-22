@@ -23,6 +23,7 @@ export class ArrowTrap {
     if (this.triggered) return false;
     this.triggered = true;
     this.destroyTriggerColliders();
+    this.scene.sound.play('arrowtrigger', { loop: false, volume: 1.5 });
 
     const arrow = this.scene.physics.add.image(this.arrowStartPosition.x, this.arrowStartPosition.y, 'arrow');
     const direction = new Vector2(
