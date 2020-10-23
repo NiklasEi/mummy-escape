@@ -71,7 +71,7 @@ export default class GameUI extends Phaser.Scene {
     const slingshot = this.physics.add.image(20, 85, 'slingshot');
     slingshot.setTint(0x808080);
 
-    this.text = this.add.text(65, 78, '');
+    this.text = this.add.text(65, 78, '0');
     this.text.setTint(0x808080);
 
     this.handleOrgans([]);

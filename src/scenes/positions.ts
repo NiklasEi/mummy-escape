@@ -5,7 +5,23 @@ export interface Position {
 
 export const stonePositions: Position[] = [
   { x: 52, y: 48 },
-  { x: 55, y: 36 }
+  { x: 25, y: 22 },
+  { x: 50, y: 25 },
+  { x: 21, y: 28 },
+  { x: 45, y: 44 },
+  { x: 73, y: 31 },
+  { x: 58, y: 37 },
+  { x: 63, y: 51 },
+  { x: 44, y: 47 },
+  { x: 26, y: 52 },
+  { x: 37, y: 75 },
+  { x: 50, y: 74 },
+  { x: 62, y: 44 },
+  { x: 76, y: 53 },
+  { x: 78, y: 78 },
+  { x: 55, y: 36 },
+  { x: 73, y: 35 },
+  { x: 78, y: 58 }
 ];
 
 export const mummyStartingPosition: Position = {
@@ -35,7 +51,11 @@ export const batPositions: Position[] = [
   { x: 48, y: 69 },
   { x: 42, y: 65 },
   { x: 42, y: 50 },
-  { x: 44, y: 42 }
+  { x: 44, y: 42 },
+  { x: 71, y: 53 },
+  { x: 79, y: 73 },
+  { x: 29, y: 57 },
+  { x: 67, y: 22 }
 ];
 
 export const spikePositions: Position[] = [
