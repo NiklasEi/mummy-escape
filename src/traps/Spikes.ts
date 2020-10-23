@@ -14,6 +14,7 @@ export class Spikes extends Phaser.Physics.Arcade.Sprite {
   trigger(entity: GameObject, _spike: GameObject): boolean {
     this.anims.play('spikes-trigger');
     this.setVelocity(0, 0);
+    this.scene.sound.play('spikes-sound', { loop: false, volume: 1 });
     this.destroyColliders();
     if (entity.name === 'mummy') {
       const mummy = entity as Mummy;

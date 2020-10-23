@@ -159,22 +159,32 @@ export const arrowTrapPositions: ArrowTrap[] = [
   },
   {
     trigger: {
-      x: 26,
-      y: 65
+      x: 68,
+      y: 26
     },
     arrowStart: {
-      x: 26,
-      y: 80
+      x: 76,
+      y: 26
     }
   },
-  {
-    trigger: {
-      x: 26,
-      y: 72
-    },
-    arrowStart: {
-      x: 26,
-      y: 73
-    }
-  }
+     {
+       trigger: {
+         x: 26,
+         y: 65
+       },
+       arrowStart: {
+         x: 26,
+         y: 80
+       }
+     },
+     {
+       trigger: {
+         x: 26,
+         y: 72
+       },
+       arrowStart: {
+         x: 26,
+         y: 73
+       }
+     }
 ];
