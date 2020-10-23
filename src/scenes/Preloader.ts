@@ -12,6 +12,9 @@ export default class Preloader extends Phaser.Scene {
     this.load.audio('creepy-1', 'assets/sounds/creepy-1.ogg');
     this.load.audio('creepy-2', 'assets/sounds/creepy-2.ogg');
     this.load.audio('creepy-3', 'assets/sounds/creepy-3.ogg');
+    this.load.audio('creepy-4', 'assets/sounds/wolf-growl-center.ogg');
+    this.load.audio('creepy-5', 'assets/sounds/wolf-growl-left.ogg');
+    this.load.audio('creepy-6', 'assets/sounds/wolf-growl-right.ogg');
 
     // map
     this.load.image('tiles', 'assets/maps/tiles-extruded.png');

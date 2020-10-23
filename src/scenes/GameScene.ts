@@ -86,10 +86,10 @@ export default class GameScene extends Phaser.Scene {
       this.soundEvent.destroy();
     }
     this.soundEvent = this.time.addEvent({
-      delay: 200,
+      delay: 10000,
       callback: () => {
-        const index = Phaser.Math.Between(0, 500);
-        if (index >= 3) return;
+        const index = Phaser.Math.Between(0, 30);
+        if (index >= 6) return;
         this.sound.play(`creepy-${index + 1}`, { loop: false, volume: 1 });
       },
       loop: true
@@ -266,7 +266,7 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.heart, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(this.lungs, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(this.stomach, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
-    this.physics.add.collider(escapeDoor, this.mummy, undefined, this.mummy.escape, this.mummy);
+    this.physics.add.collider(escapeDoor, this.mummy, this.mummy.escape, undefined, this.mummy);
 
     sceneEvents.on('mummy-die-start', () => {
       if (this.playerGhostCollider?.active) {
