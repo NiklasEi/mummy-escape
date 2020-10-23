@@ -33,7 +33,7 @@ export default class GameUI extends Phaser.Scene {
 
   private handleOrgans(organs: string[]) {
     this.organs.forEach((organ, index) => {
-      const newOrgan = this.physics.add.image(20 + index * 30, 85, organ);
+      const newOrgan = this.physics.add.image(20 + index * 30, 55, organ);
       newOrgan.scale = 0.7;
       if (!organs.includes(organ)) {
         newOrgan.setTint(0x808080);
@@ -58,16 +58,29 @@ export default class GameUI extends Phaser.Scene {
       quantity: 3
     });
 
-    const stone = this.physics.add.image(20, 55, 'stone');
+    const lamp = this.physics.add.image(20, 115, 'lamp');
+    lamp.setTint(0x808080);
+    lamp.scale = 0.7;
+
+    const slingshot = this.physics.add.image(20, 85, 'slingshot');
+    slingshot.setTint(0x808080);
+    slingshot.scale = 0.7;
+    const stone = this.physics.add.image(50, 85, 'stone');
     stone.scale = 0.7;
     this.stones = 0;
-    this.text = this.add.text(35, 45, this.stones.toString());
+    this.text = this.add.text(65, 75, this.stones.toString());
 
     this.handleOrgans([]);
 
     sceneEvents.on('health-damage', this.handleHealthDamage, this);
     sceneEvents.on('collect-stone', this.handleStone, this);
     sceneEvents.on('collect-organs', this.handleOrgans, this);
+    sceneEvents.on('better-light', () => {
+      lamp.clearTint();
+    });
+    sceneEvents.on('collect-slingshot', () => {
+      slingshot.clearTint();
+    });
 
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       sceneEvents.off('health-damage', this.handleHealthDamage, this);
