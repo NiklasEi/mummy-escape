@@ -101,13 +101,14 @@ interface ItemPositions {
 
 export const itemPositions: ItemPositions = {
   slingshot: { x: 60, y: 22 },
-  lamp: { x: 22, y: 22 }
+  lamp: { x: 21, y: 22 }
 };
 
 export const torchPositions: Position[] = [
   { x: 21, y: 31 },
   { x: 21, y: 34 },
-  { x: 61, y: 22 }
+  { x: 61, y: 22 },
+  { x: 20, y: 22 }
 ];
 
 interface ArrowTrap {
