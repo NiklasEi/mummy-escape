@@ -39,7 +39,9 @@ export const ghostPositions: Position[] = [
   { x: 48, y: 57 },
   { x: 22, y: 76 },
   { x: 59, y: 31 },
-  { x: 55, y: 36 }
+  { x: 55, y: 36 },
+  { x: 33, y: 65 },
+  { x: 35, y: 42 }
 ];
 
 export const batPositions: Position[] = [
@@ -55,7 +57,8 @@ export const batPositions: Position[] = [
   { x: 71, y: 53 },
   { x: 79, y: 73 },
   { x: 29, y: 57 },
-  { x: 67, y: 22 }
+  { x: 67, y: 22 },
+  { x: 37, y: 77 }
 ];
 
 export const spikePositions: Position[] = [
@@ -167,24 +170,44 @@ export const arrowTrapPositions: ArrowTrap[] = [
       y: 26
     }
   },
-     {
-       trigger: {
-         x: 26,
-         y: 65
-       },
-       arrowStart: {
-         x: 26,
-         y: 80
-       }
-     },
-     {
-       trigger: {
-         x: 26,
-         y: 72
-       },
-       arrowStart: {
-         x: 26,
-         y: 73
-       }
-     }
+  {
+    trigger: {
+      x: 27,
+      y: 72
+    },
+    arrowStart: {
+      x: 27,
+      y: 65
+    }
+  },
+  {
+    trigger: {
+      x: 26,
+      y: 72
+    },
+    arrowStart: {
+      x: 26,
+      y: 80
+    }
+  },
+  {
+    trigger: {
+      x: 42,
+      y: 32
+    },
+    arrowStart: {
+      x: 31,
+      y: 32
+    }
+  },
+  {
+    trigger: {
+      x: 41,
+      y: 31
+    },
+    arrowStart: {
+      x: 47,
+      y: 31
+    }
+  }
 ];
