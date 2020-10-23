@@ -25,6 +25,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   private activeStone?: any;
   private dead = false;
   private _torch = 0;
+  private _slingshot = 0;
   private readonly gameScene: GameScene;
   private readonly organs: string[] = [];
   private readonly keys: Control;
@@ -104,6 +105,11 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   collectTorch(torch: GameObject, _mummy: GameObject) {
     torch.destroy();
     this._torch = 1;
+  }
+
+    collectSlingshot(slingshot: GameObject, _mummy: GameObject) {
+    slingshot.destroy();
+    this._slingshot = 1;
   }
 
   collectOrgans(organ: GameObject, _mummy: GameObject) {
@@ -192,8 +198,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
     // @ts-ignore-next-line
     if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
-      this.shootStone();
-      return;
+      if (!this._slingshot) return;
+      return this.shootStone();
     }
 
     const speed = 125;

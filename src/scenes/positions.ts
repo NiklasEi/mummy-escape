@@ -5,8 +5,6 @@ export interface Position {
 
 export const stonePositions: Position[] = [
   { x: 52, y: 48 },
-  { x: 52, y: 49 },
-  { x: 51, y: 48 },
   { x: 55, y: 36 }
 ];
 
@@ -43,7 +41,23 @@ export const batPositions: Position[] = [
 export const spikePositions: Position[] = [
   { x: 49, y: 41 },
   { x: 50, y: 43 },
-  { x: 50, y: 39 }
+  { x: 50, y: 39 },
+  { x: 30, y: 22 },
+  { x: 28, y: 22 },
+  { x: 79, y: 32 },
+  { x: 78, y: 34 },
+  { x: 79, y: 36 },
+  { x: 67, y: 43 },
+  { x: 69, y: 44 },
+  { x: 67, y: 43 },
+  { x: 68, y: 42 },
+  { x: 71, y: 43 },
+  { x: 34, y: 53 },
+  { x: 46, y: 38 },
+  { x: 31, y: 67 },
+  { x: 61, y: 75 },
+  { x: 50, y: 57 },
+  { x: 50, y: 59 }
 ];
 
 export const chestPositions: Position[] = [{ x: 47, y: 52 }];
@@ -68,7 +82,7 @@ interface ItemPositions {
 }
 
 export const itemPositions: ItemPositions = {
-  slingshot: { x: 52, y: 49 },
+  slingshot: { x: 57, y: 23 },
   torch: { x: 52, y: 50 }
 };
 

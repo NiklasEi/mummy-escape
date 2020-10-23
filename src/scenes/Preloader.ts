@@ -38,6 +38,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('stone', 'assets/weapons/stone.png');
     this.load.image('stone1', 'assets/weapons/stone1.png');
     this.load.image('stone2', 'assets/weapons/stone2.png');
+    this.load.image('slingshot', 'assets/weapons/slingshot.png');
 
     // UI
     this.load.image('heart-empty', 'assets/health/heart_empty.png');

@@ -36,6 +36,7 @@ export default class GameScene extends Phaser.Scene {
   private arrowTraps: ArrowTrap[] = [];
   private stones!: Phaser.Physics.Arcade.Group;
   private torch!: Phaser.GameObjects.Image;
+  private slingshot!: Phaser.GameObjects.Image;
   private burningTorch!: Phaser.GameObjects.Group;
   private vision?: Phaser.GameObjects.Image;
   private heart!: Phaser.GameObjects.Image;
@@ -163,6 +164,10 @@ export default class GameScene extends Phaser.Scene {
     this.torch = this.physics.add.image(torchPosition.x, torchPosition.y, 'torch');
     this.torch.scale = 0.5;
 
+    const slingshotPosition = slotToCenterInTile(itemPositions.slingshot);
+    this.slingshot = this.physics.add.image(slingshotPosition.x, slingshotPosition.y, 'slingshot');
+    this.slingshot.scale = 0.5;
+
     const heartPosition = slotToCenterInTile(organPositions.heart);
     this.heart = this.physics.add.image(heartPosition.x, heartPosition.y, 'heart');
     this.heart.scale = 0.5;
@@ -253,6 +258,7 @@ export default class GameScene extends Phaser.Scene {
     );
 
     this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this.mummy);
+    this.physics.add.collider(this.slingshot, this.mummy, this.mummy.collectSlingshot, undefined, this.mummy);
     this.physics.add.collider(this.torch, this.mummy, this.mummy.collectTorch, undefined, this.mummy);
     this.physics.add.collider(this.brain, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(this.heart, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
