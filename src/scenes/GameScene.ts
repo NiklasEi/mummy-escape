@@ -203,6 +203,8 @@ export default class GameScene extends Phaser.Scene {
       createCallback: (gameObj) => {
         const ghostObj = gameObj as Ghost;
         ghostObj.body.onCollide = true;
+        this.physics.world.enableBody(ghostObj, Phaser.Physics.Arcade.DYNAMIC_BODY);
+        ghostObj.body.setSize(ghostObj.width * 0.8, ghostObj.height * 0.8);
       }
     });
     ghostPositions.map(slotToPixels).forEach((position) => this.ghosts.get(position.x, position.y, 'ghost'));
@@ -213,7 +215,7 @@ export default class GameScene extends Phaser.Scene {
         const batObj = gameObj as Bat;
         batObj.body.onCollide = true;
         this.physics.world.enableBody(batObj, Phaser.Physics.Arcade.DYNAMIC_BODY);
-        batObj.body.setSize(batObj.width * 0.7, batObj.height * 0.5);
+        batObj.body.setSize(batObj.width * 0.6, batObj.height * 0.4);
       }
     });
     batPositions.map(slotToPixels).forEach((position) => this.bats.get(position.x, position.y, 'bat'));
