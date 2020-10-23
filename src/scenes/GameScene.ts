@@ -311,7 +311,7 @@ export default class GameScene extends Phaser.Scene {
     sceneEvents.once('won', () => {
       const won = this.add.image(this.mummy.x, this.mummy.y, 'win');
       won.scale = 0.5;
-      if(this.vision) {
+      if (this.vision) {
         this.vision.alpha = 1;
       }
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
