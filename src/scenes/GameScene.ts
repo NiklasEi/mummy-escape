@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
   private readonly spikes: Spikes[] = [];
   private arrowTraps: ArrowTrap[] = [];
   private stones!: Phaser.Physics.Arcade.Group;
-  private torch!: Phaser.GameObjects.Image;
+  private lamp!: Phaser.GameObjects.Image;
   private slingshot!: Phaser.GameObjects.Image;
   private burningTorch!: Phaser.GameObjects.Group;
   private vision?: Phaser.GameObjects.Image;
@@ -160,9 +160,9 @@ export default class GameScene extends Phaser.Scene {
       return stone;
     });
 
-    const torchPosition = slotToCenterInTile(itemPositions.torch);
-    this.torch = this.physics.add.image(torchPosition.x, torchPosition.y, 'torch');
-    this.torch.scale = 0.5;
+    const lampPosition = slotToCenterInTile(itemPositions.lamp);
+    this.lamp = this.physics.add.image(lampPosition.x, lampPosition.y, 'lamp');
+    this.lamp.scale = 0.5;
 
     const slingshotPosition = slotToCenterInTile(itemPositions.slingshot);
     this.slingshot = this.physics.add.image(slingshotPosition.x, slingshotPosition.y, 'slingshot');
@@ -184,7 +184,7 @@ export default class GameScene extends Phaser.Scene {
     this.stomach = this.physics.add.image(stomachPosition.x, stomachPosition.y, 'stomach');
     this.stomach.scale = 0.5;
 
-    [...stones, this.torch, this.heart, this.brain, this.lungs, this.stomach].forEach(
+    [...stones, this.slingshot, this.lamp, this.heart, this.brain, this.lungs, this.stomach].forEach(
       (obj: Phaser.GameObjects.Image) => {
         this.tweens.add({
           targets: obj,
@@ -259,7 +259,8 @@ export default class GameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.stones, this.mummy, this.mummy.collectStone, undefined, this.mummy);
     this.physics.add.collider(this.slingshot, this.mummy, this.mummy.collectSlingshot, undefined, this.mummy);
-    this.physics.add.collider(this.torch, this.mummy, this.mummy.collectTorch, undefined, this.mummy);
+    this.physics.add.collider(this.lamp, this.mummy, this.mummy.collectLamp, undefined, this.mummy);
+    this.physics.add.collider(this.slingshot, this.mummy, this.mummy.collectSlingshot, undefined, this.mummy);
     this.physics.add.collider(this.brain, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(this.heart, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
     this.physics.add.collider(this.lungs, this.mummy, this.mummy.collectOrgans, undefined, this.mummy);
@@ -282,10 +283,8 @@ export default class GameScene extends Phaser.Scene {
     if (this.vision && this.cursors) {
       this.mummy.update(this.cursors, this.vision);
 
-      if (this.mummy.torch) {
-        this.vision.x = this.mummy.x;
-        this.vision.y = this.mummy.y;
-      }
+      this.vision.x = this.mummy.x;
+      this.vision.y = this.mummy.y;
     }
   }
 
@@ -301,18 +300,22 @@ export default class GameScene extends Phaser.Scene {
     });
     rt.draw(mask, (mapSize * tileSize) / 2, (mapSize * tileSize) / 2);
 
-    this.vision.scale = 9;
+    this.vision.scale = 7;
+    this.vision.alpha = 0.3;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
     rt.mask.invertAlpha = true;
-
-    const initialVision = slotToCenterInTile(itemPositions.torch);
-    this.vision.x = initialVision.x;
-    this.vision.y = initialVision.y;
 
     sceneEvents.once('won', () => {
       const won = this.add.image(this.mummy.x, this.mummy.y, 'win');
       won.scale = 0.5;
       this.scene.pause();
+    });
+
+    sceneEvents.on('better-light', () => {
+      if (this.vision) {
+        this.vision.scale = 9;
+        this.vision.alpha = 1;
+      }
     });
 
     sceneEvents.once('mummy-die-end', () => {
