@@ -126,7 +126,8 @@ export default class GameScene extends Phaser.Scene {
         mummy.name = 'mummy';
         mummy.body.onCollide = true;
         this.physics.world.enableBody(mummy, Phaser.Physics.Arcade.DYNAMIC_BODY);
-        mummy.body.setSize(mummy.width * 0.6, mummy.height * 0.9);
+        mummy.body.setSize(mummy.width * 0.5, mummy.height * 0.6);
+        mummy.body.setOffset(8, 10);
       }
     });
 
@@ -301,7 +302,7 @@ export default class GameScene extends Phaser.Scene {
     rt.draw(mask, (mapSize * tileSize) / 2, (mapSize * tileSize) / 2);
 
     this.vision.scale = 7;
-    this.vision.alpha = 0.3;
+    this.vision.alpha = 0.2;
     rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
     rt.mask.invertAlpha = true;
 

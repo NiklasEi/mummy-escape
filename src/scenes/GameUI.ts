@@ -5,7 +5,6 @@ import { Organs } from '../mummy/Organs';
 
 export default class GameUI extends Phaser.Scene {
   private hearts!: Phaser.GameObjects.Group;
-  private stones = 0;
   private text!: any;
   private readonly organs: string[];
 
@@ -27,14 +26,22 @@ export default class GameUI extends Phaser.Scene {
   }
 
   private handleStone(restStones: number) {
-    this.stones = restStones;
-    this.text.setText(this.stones);
+    const stone = this.physics.add.image(50, 85, 'stone');
+    stone.scale = 0.9;
+
+    if (restStones === 0) {
+      stone.setTint(0x808080);
+    } else {
+      stone.clearTint();
+      this.text.clearTint();
+    }
+
+    this.text.setText(restStones);
   }
 
   private handleOrgans(organs: string[]) {
     this.organs.forEach((organ, index) => {
       const newOrgan = this.physics.add.image(20 + index * 30, 55, organ);
-      newOrgan.scale = 0.7;
       if (!organs.includes(organ)) {
         newOrgan.setTint(0x808080);
       }
@@ -60,17 +67,15 @@ export default class GameUI extends Phaser.Scene {
 
     const lamp = this.physics.add.image(20, 115, 'lamp');
     lamp.setTint(0x808080);
-    lamp.scale = 0.7;
 
     const slingshot = this.physics.add.image(20, 85, 'slingshot');
     slingshot.setTint(0x808080);
-    slingshot.scale = 0.7;
-    const stone = this.physics.add.image(50, 85, 'stone');
-    stone.scale = 0.7;
-    this.stones = 0;
-    this.text = this.add.text(65, 75, this.stones.toString());
+
+    this.text = this.add.text(65, 78, '');
+    this.text.setTint(0x808080);
 
     this.handleOrgans([]);
+    this.handleStone(0);
 
     sceneEvents.on('health-damage', this.handleHealthDamage, this);
     sceneEvents.on('collect-stone', this.handleStone, this);
