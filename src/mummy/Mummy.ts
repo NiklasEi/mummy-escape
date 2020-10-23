@@ -137,6 +137,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
 
   handleDamage(knockBack?: Phaser.Math.Vector2) {
     if (this.healthState === HealthState.DAMAGE) return;
+    this.scene.sound.play('hurt', { loop: false, volume: 1 });
 
     if (knockBack) {
       this.setVelocity(knockBack.x, knockBack.y);
