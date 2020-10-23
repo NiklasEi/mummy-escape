@@ -322,7 +322,7 @@ export default class GameScene extends Phaser.Scene {
       }
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {
-        const restart = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'restart-button');
+        const restart = this.add.image(this.mummy.x, this.mummy.y + 50, 'restart-button');
         restart.scale = 0.5;
         restart.setInteractive();
         restart.on('pointerdown', () => {

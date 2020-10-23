@@ -107,7 +107,7 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
     this._torch = 1;
   }
 
-    collectSlingshot(slingshot: GameObject, _mummy: GameObject) {
+  collectSlingshot(slingshot: GameObject, _mummy: GameObject) {
     slingshot.destroy();
     this._slingshot = 1;
   }
