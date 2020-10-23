@@ -311,6 +311,10 @@ export default class GameScene extends Phaser.Scene {
     sceneEvents.once('won', () => {
       const won = this.add.image(this.mummy.x, this.mummy.y, 'win');
       won.scale = 0.5;
+      if(this.vision) {
+        this.vision.alpha = 1;
+      }
+      this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       this.scene.pause();
     });
 
@@ -323,8 +327,7 @@ export default class GameScene extends Phaser.Scene {
 
     sceneEvents.once('mummy-die-end', () => {
       if (this.vision) {
-        this.vision.x = this.mummy.x;
-        this.vision.y = this.mummy.y;
+        this.vision.alpha = 1;
       }
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {

@@ -42,7 +42,7 @@ export class ArrowTrap {
     this.scene.physics.add.collider(this.scene.mummy, arrow, undefined, this.hitPlayer, this);
     this.scene.physics.add.collider(arrow, this.scene.wallsLayer, this.destroyArrow, undefined, this);
     this.scene.physics.add.collider(arrow, this.scene.doorsLayer, this.destroyArrow, undefined, this);
-    const speed = direction.normalize().scale(300);
+    const speed = direction.normalize().scale(350);
     arrow.setVelocity(speed.x, speed.y);
     return false;
   }
