@@ -127,7 +127,7 @@ export default class GameScene extends Phaser.Scene {
         mummy.body.onCollide = true;
         this.physics.world.enableBody(mummy, Phaser.Physics.Arcade.DYNAMIC_BODY);
         mummy.body.setSize(mummy.width * 0.5, mummy.height * 0.6);
-        mummy.body.setOffset(8, 10);
+        mummy.body.setOffset(8, 12);
       }
     });
 
