@@ -30,7 +30,7 @@ export default class Preloader extends Phaser.Scene {
 
     // entities
     this.load.atlas('mummy', 'assets/mummy.png', 'assets/mummy.json');
-    this.load.atlas('ghost', 'assets/enemies/ghost1/ghost.png', 'assets/enemies/ghost1/ghost.json');
+    this.load.atlas('ghost', 'assets/enemies/ghost/ghost.png', 'assets/enemies/ghost/ghost.json');
     this.load.atlas('bat', 'assets/enemies/bat/bat.png', 'assets/enemies/bat/bat.json');
     this.load.atlas('chest', 'assets/chest/chest-full.png', 'assets/chest/chest-full.json');
     this.load.atlas('torch-anim', 'assets/maps/torch.png', 'assets/maps/torch.json');
@@ -43,12 +43,14 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('heart-empty', 'assets/health/heart_empty.png');
     this.load.image('heart-full', 'assets/health/heart_full.png');
     this.load.image('heart-half', 'assets/health/heart_half.png');
-    this.load.image('button', 'assets/mainMenu/menu_button.png');
-    this.load.image('button-press', 'assets/mainMenu/menu_button_press.png');
+    this.load.image('start-button', 'assets/mainMenu/start.jpeg');
+    this.load.image('restart-button', 'assets/mainMenu/restart.jpeg');
     this.load.image('brain', 'assets/organs/brain.png');
     this.load.image('heart', 'assets/organs/heart.png');
     this.load.image('lungs', 'assets/organs/lungs.png');
     this.load.image('stomach', 'assets/organs/stomach.png');
+    this.load.image('menu', 'assets/mainMenu/menu.png');
+    this.load.image('win', 'assets/win.png');
   }
 
   create() {

@@ -8,15 +8,23 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   create() {
-    this.playButton = this.add.image(this.game.renderer.width / 2, (this.game.renderer.height * 2) / 3, 'button');
-    this.playButton.scale = 2;
+    this.physics.add.image(this.game.renderer.width / 2, this.game.renderer.height / 2, 'menu');
+    this.addControls((this.game.renderer.height * 2) / 3 + 64);
+    this.playButton = this.add.image(this.game.renderer.width / 2, (this.game.renderer.height * 2) / 3, 'start-button');
     this.playButton.setInteractive();
-    const text = this.add.text(this.game.renderer.width / 2 - 45, (this.game.renderer.height * 2) / 3 - 20, 'START');
-    text.scale = 2;
-
-    this.playButton.on('pointerup', () => {
-      this.playButton.setTexture('button-press');
-      setTimeout(() => this.scene.start('game'), 500);
+    this.playButton.on('pointerdown', () => {
+      this.playButton.setTint(0x808080);
     });
+    this.playButton.on('pointerup', () => {
+      this.scene.start('game');
+    });
+  }
+
+  private addControls(height: number) {
+    this.add.text(this.game.renderer.width / 2 - 106, height + 16, 'move');
+    this.add.text(this.game.renderer.width / 2 + 39, height, 'W / ⬆️');
+    this.add.text(this.game.renderer.width / 2 - 16, height + 32, 'A / ⬅️    S / ️⬇    D / ➡️');
+    this.add.text(this.game.renderer.width / 2 - 106, height + 80, 'shoot');
+    this.add.text(this.game.renderer.width / 2 + 39, height + 80, 'space');
   }
 }

@@ -183,9 +183,9 @@ export default class GameScene extends Phaser.Scene {
       (obj: Phaser.GameObjects.Image) => {
         this.tweens.add({
           targets: obj,
-          y: obj.y - 10,
+          y: obj.y - 7,
           yoyo: true,
-          duration: 2000,
+          duration: 1500,
           loop: -1
         });
       }
@@ -303,20 +303,27 @@ export default class GameScene extends Phaser.Scene {
     this.vision.x = initialVision.x;
     this.vision.y = initialVision.y;
 
-    sceneEvents.on('mummy-die-end', () => {
+    sceneEvents.once('won', () => {
+      const won = this.add.image(this.mummy.x, this.mummy.y, 'win');
+      won.scale = 0.5;
+      this.scene.pause();
+    });
+
+    sceneEvents.once('mummy-die-end', () => {
       if (this.vision) {
         this.vision.x = this.mummy.x;
         this.vision.y = this.mummy.y;
       }
       this.tweens.add({ targets: this.vision, scaleX: 100, scaleY: 100, duration: 10000 });
       setTimeout(() => {
-        const playButton = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'button');
-        playButton.setInteractive();
-        this.add.text(this.mummy.x - 32, this.mummy.y + 3.7 * tileSize, 'RESTART');
-
-        playButton.on('pointerup', () => {
-          playButton.setTexture('button-press');
-          setTimeout(() => this.scene.restart(), 500);
+        const restart = this.add.image(this.mummy.x, this.mummy.y + 4 * tileSize, 'restart-button');
+        restart.scale = 0.5;
+        restart.setInteractive();
+        restart.on('pointerdown', () => {
+          restart.setTint(0x808080);
+        });
+        restart.on('pointerup', () => {
+          this.scene.restart();
         });
       }, 2000);
     });

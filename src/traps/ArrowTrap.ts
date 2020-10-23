@@ -79,7 +79,11 @@ export class ArrowTrap {
       if (this.scene.mummy.healthState !== HealthState.DEAD) {
         sceneEvents.once('mummy-state-idle', () => arrow.destroy());
       } else {
-        sceneEvents.once('mummy-die-end', () => shotArrow.setVelocity(0, 0));
+        sceneEvents.once('mummy-die-end', () => {
+          if (shotArrow.active) {
+            shotArrow.setVelocity(0, 0);
+          }
+        });
       }
     }
     return false;

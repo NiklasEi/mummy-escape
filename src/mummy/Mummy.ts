@@ -148,6 +148,9 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   escape(_: Phaser.GameObjects.GameObject, _door: Phaser.GameObjects.GameObject) {
+    if (this.organs.length === 4) {
+      sceneEvents.emit('won');
+    }
     return this.organs.length !== 4;
   }
 
