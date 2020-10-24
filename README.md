@@ -2,7 +2,7 @@
 
 Spooky game written for the Scream Zone 2020 game jam by [@jennifervphan](https://github.com/jennifervphan) and [@NiklasEi](https://github.com/NiklasEi)
 
-Play [here](https://mummy.nikl.me) or on itch.io (project not public yet) :video_game:
+Play [here](https://mummy.nikl.me) or on [itch.io](https://niklme.itch.io/mummy-escape) :video_game:
 
 ## Story
 You just woke up in your sarcophagus deep in the dungeon below a Pyramid. How nice would it be to escape from this place? There is a problem though: all your organs were taken from you before you were embalmed and mummified. Without them, you will never be able to leave the Pyramid. Find them and leave this forsaken place! But be warned, that your tomb is like a labyrinth and has some surprises lurking around the corner.
